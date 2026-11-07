@@ -187,7 +187,7 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateEdgeDecorations(
     std::vector<DecorationPlacement> placements;
     
     for (const auto& zone : zones) {
-        if (zone.zoneType != "edge") continue;
+        if (zone.zoneType != "edge" || zone.decorationDensity <= 0.0f) continue;
         
         int decorationCount = static_cast<int>(zone.area.size.width * zone.area.size.height * zone.decorationDensity * 0.01f * (1.0f + chaosScale * 0.5f));
         decorationCount = std::clamp(decorationCount, 2, 15);
@@ -215,7 +215,7 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateFillDecorations(
     std::vector<DecorationPlacement> placements;
     
     for (const auto& zone : zones) {
-        if (zone.zoneType != "fill") continue;
+        if (zone.zoneType != "fill" || zone.decorationDensity <= 0.0f) continue;
         
         int decorationCount = static_cast<int>(zone.area.size.width * zone.area.size.height * zone.decorationDensity * 0.005f * detailScale);
         decorationCount = std::clamp(decorationCount, 1, 8);
