@@ -46,6 +46,23 @@
       "default": "",
       "name": "Backup AI API key",
       "description": "Stored in local Geode mod settings; never share it."
+    },
+    "provider-3-endpoint": {
+      "type": "string",
+      "default": "",
+      "name": "Fallback AI endpoint",
+      "description": "Used if the primary and backup providers fail."
+    },
+    "provider-3-model": {
+      "type": "string",
+      "default": "",
+      "name": "Fallback AI model"
+    },
+    "provider-3-key": {
+      "type": "string",
+      "default": "",
+      "name": "Fallback AI API key",
+      "description": "Stored in local Geode mod settings; never share it."
     }
   }
 }
