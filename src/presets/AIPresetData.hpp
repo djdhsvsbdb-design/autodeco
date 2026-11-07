@@ -33,6 +33,28 @@ enum class ShapeType {
     Complex
 };
 
+// Strict allow-list of decorative Geometry Dash 2.2081 object IDs.
+// Keeping this list narrow prevents custom presets from inserting gameplay
+// objects such as orbs, portals, pads, triggers, or hazards.
+inline bool isAllowedDecorationObjectID(int id) {
+    switch (id) {
+        case 15: case 16: case 17:
+        case 48: case 49:
+        case 50: case 51: case 52: case 53: case 54:
+        case 85: case 86: case 87:
+        case 113: case 114: case 115:
+        case 157: case 158: case 159:
+        case 180: case 181: case 182:
+        case 225: case 226: case 227: case 228:
+        case 233: case 234: case 235:
+        case 245: case 246:
+        case 277: case 278:
+            return true;
+        default:
+            return false;
+    }
+}
+
 struct DecorationObject {
     int objectID;
     float weight;
