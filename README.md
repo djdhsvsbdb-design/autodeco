@@ -62,50 +62,24 @@ Alt3rDECO analyzes selected level geometry and automatically generates human-lik
 
 ## Build Instructions
 
-### Prerequisites
-- Windows 10/11
-- Visual Studio 2019 or later with C++ development tools
-- CMake 3.15 or later
-- Geode SDK 2.0.0 or later
-- Geometry Dash 2.2081 (PC)
+### Requirements
+- Geode SDK 5.11.2
+- Geode CLI
+- Geometry Dash 2.2081 (Windows target currently declared in `mod.json`)
+- CMake 3.21+ and a supported C++23 toolchain
 
-### Setup
+### Build
+1. Install and configure the Geode SDK using the official Geode setup guide.
+2. Set the `GEODE_SDK` environment variable to the installed SDK directory.
+3. From the repository root, run:
 
-1. **Clone or download this mod repository**
-
-2. **Install Geode**:
-   - Download Geode installer from https://geode-sdk.org/
-   - Install Geode to your Geometry Dash directory
-
-3. **Set up build environment**:
    ```bash
-   # Navigate to the mod directory
-   cd "c:/Users/Reid/Downloads/gd mod"
-   
-   # Create build directory
-   mkdir build
-   cd build
+   geode build
    ```
 
-4. **Configure with CMake**:
-   ```bash
-   cmake .. -G "Visual Studio 16 2019" -A x64
-   ```
-   (Adjust generator for your Visual Studio version)
+4. Check the build output for the packaged `.geode` artifact and test it in a clean Geometry Dash + Geode installation.
 
-5. **Build the mod**:
-   ```bash
-   cmake --build . --config Release
-   ```
-
-6. **Install the mod**:
-   - Copy the built `.geode` file from `build/Release/` to your Geode mods directory:
-   ```
-   %LOCALAPPDATA%\GeometryDash\geode\mods\
-   ```
-
-7. **Launch Geometry Dash**:
-   - The mod will load automatically when you open the editor
+Do not distribute a build as a release until compilation, loading, editor selection, undo/redo, and preset persistence have been tested.
 
 ## Usage
 
