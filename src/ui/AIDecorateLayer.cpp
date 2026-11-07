@@ -107,7 +107,7 @@ void AIDecorateLayer::createOverlayPanel() {
     m_mainMenu->setPosition(0, 0);
     panel->addChild(m_mainMenu);
 
-    auto closeSprite = ButtonSprite::create("Close", "goldFont.fnt", "Buttonართ_001.png", 0.7f);
+    auto closeSprite = ButtonSprite::create("Close");
     auto closeButton = CCMenuItemSpriteExtra::create(
         closeSprite,
         this,
