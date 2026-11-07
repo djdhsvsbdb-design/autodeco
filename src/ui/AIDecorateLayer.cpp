@@ -542,15 +542,17 @@ std::vector<geode::Ref<GameObject>> AIDecorateLayer::getSelectedObjects() {
         return selectedObjects;
     }
     
-    auto editorLayer = m_editorUI->m_editorLayer;
-    if (!editorLayer) {
+    // EditorUI owns the current selection; wrap its CCArray with Geode's
+    // typed range adapter before copying references.
+    auto selectedArray = m_editorUI->getSelectedObjects();
+    if (!selectedArray) {
         return selectedObjects;
     }
-    
-    // Get selected objects from editor
-    auto selected = editorLayer->getSelectedObjects();
-    for (auto obj : selected) {
-        selectedObjects.push_back(obj);
+
+    for (auto obj : CCArrayExt<GameObject*>(selectedArray)) {
+        if (obj) {
+            selectedObjects.emplace_back(obj);
+        }
     }
     
     return selectedObjects;
