@@ -117,7 +117,7 @@ void AIDecorateLayer::createOverlayPanel() {
     panel->addChild(m_statusLabel);
 
     auto note = CCLabelBMFont::create(
-        "Review the preview before applying. One editor paste = one Undo step.",
+        "Review the preview before applying. Verify Undo before saving.",
         "chatFont.fnt"
     );
     note->setPosition(width / 2, 12.0f);
