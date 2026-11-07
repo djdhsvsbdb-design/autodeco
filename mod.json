@@ -1,17 +1,14 @@
 {
-    "geode": "2.0.0",
-    "version": "1.0.0",
+    "geode": "5.11.2",
+    "gd": {
+        "win": "2.2081"
+    },
     "id": "autodecoratorai.reid",
     "name": "Alt3rDECO",
+    "version": "1.1.0",
     "developer": "Reid",
     "description": "Alt3rDECO: adaptive procedural decoration assistant for selected Geometry Dash editor objects.",
     "repository": "https://github.com/djdhsvsbdb-design/autodeco",
-    "dependencies": [
-        {
-            "id": "geode",
-            "version": ">=2.0.0"
-        }
-    ],
     "settings": {
         "default-density": {
             "type": "float",
@@ -19,7 +16,7 @@
             "min": 0.0,
             "max": 1.0,
             "name": "Default Decoration Density",
-            "description": "Default density for AI decoration generation"
+            "description": "Default density for decoration generation"
         },
         "default-chaos": {
             "type": "float",
@@ -29,10 +26,5 @@
             "name": "Default Chaos Factor",
             "description": "Default randomness for decoration placement"
         }
-    },
-    "resources": {
-        "sprites": [
-            "resources/sprites/*.png"
-        ]
     }
 }
