@@ -539,7 +539,7 @@ std::vector<geode::Ref<GameObject>> AIDecorateLayer::getSelectedObjects() {
         return selectedObjects;
     }
     
-    auto editorLayer = m_editorUI->getEditorLayer();
+    auto editorLayer = m_editorUI->m_editorLayer;
     if (!editorLayer) {
         return selectedObjects;
     }
