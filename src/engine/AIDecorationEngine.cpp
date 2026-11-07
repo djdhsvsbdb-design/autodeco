@@ -57,10 +57,11 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorations(
     reportProgress("Analyzing geometry...", 0.1f);
     
     // Apply overrides if provided
-    float densityScale = densityOverride >= 0 ? densityOverride : 1.0f;
-    float chaosScale = chaosOverride >= 0 ? chaosOverride : preset.chaosTolerance;
-    float symmetryScale = symmetryOverride >= 0 ? symmetryOverride : preset.symmetryPreference;
-    float detailScale = detailOverride >= 0 ? detailOverride : preset.microDetailLevel;
+    // Keep UI overrides in their documented 0..1 range.
+    const float densityScale = std::clamp(densityOverride >= 0 ? densityOverride : 1.0f, 0.0f, 1.0f);
+    const float chaosScale = std::clamp(chaosOverride >= 0 ? chaosOverride : preset.chaosTolerance, 0.0f, 1.0f);
+    const float symmetryScale = std::clamp(symmetryOverride >= 0 ? symmetryOverride : preset.symmetryPreference, 0.0f, 1.0f);
+    const float detailScale = std::clamp(detailOverride >= 0 ? detailOverride : preset.microDetailLevel, 0.0f, 1.0f);
     
     // Analyze geometry
     auto clusters = m_geometryAnalyzer->analyzeSelection(selectedObjects);
@@ -98,14 +99,18 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorations(
     // Validate and filter placements
     std::vector<DecorationPlacement> validatedPlacements;
     for (const auto& placement : allPlacements) {
-        bool valid = true;
+        // A placement belongs to one cluster, not every cluster. The old
+        // all-clusters test rejected nearly all decorations in multi-cluster selections.
+        bool insideSelection = false;
         for (const auto& cluster : clusters) {
-            if (!validatePlacement(placement, cluster, validatedPlacements)) {
-                valid = false;
+            if (cluster.boundingBox.containsPoint(placement.position)) {
+                insideSelection = true;
                 break;
             }
         }
-        if (valid) {
+
+        if (insideSelection &&
+            validatePlacement(placement, GeometryCluster{}, validatedPlacements)) {
             validatedPlacements.push_back(placement);
         }
     }
@@ -126,8 +131,12 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorationsForClust
 ) {
     std::vector<DecorationPlacement> placements;
     
-    // Generate decoration zones
+    // Generate decoration zones and apply the density slider consistently to
+    // edge, fill, corner and micro-detail placement.
     auto zones = m_geometryAnalyzer->generateDecorationZones(cluster, preset);
+    for (auto& zone : zones) {
+        zone.decorationDensity = std::clamp(zone.decorationDensity * densityScale, 0.0f, 1.0f);
+    }
     
     // Generate edge decorations
     if (preset.edgeEmphasis) {
@@ -411,11 +420,9 @@ bool AIDecorationEngine::validatePlacement(
     const GeometryCluster& cluster,
     const std::vector<DecorationPlacement>& existingPlacements
 ) {
-    // Check if placement is within cluster bounds
-    if (!cluster.boundingBox.containsPoint(placement.position)) {
-        return false;
-    }
-    
+    // Bounds are checked against the union of selected clusters by the caller.
+    (void)cluster;
+
     // Check for overlap with existing placements
     const float minDistance = 20.0f;
     for (const auto& existing : existingPlacements) {
