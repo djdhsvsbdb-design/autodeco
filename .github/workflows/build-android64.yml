@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+      - name: Remove stale local CMake build cache
+        run: rm -rf build
       - name: Build with Geode SDK
         id: build
         uses: geode-sdk/build-geode-mod@main
