@@ -13,6 +13,7 @@ set(SOURCES
     src/engine/PatternDetector.cpp
     src/presets/AIPresetManager.cpp
     src/presets/AIPresetData.cpp
+    src/ai/ProviderRouter.cpp
 )
 
 # Header files
@@ -23,6 +24,7 @@ set(HEADERS
     src/engine/PatternDetector.hpp
     src/presets/AIPresetManager.hpp
     src/presets/AIPresetData.hpp
+    src/ai/ProviderRouter.hpp
 )
 
 # Create shared library (DLL)
