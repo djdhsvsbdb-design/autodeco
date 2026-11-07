@@ -163,9 +163,9 @@ AIPreset AIPresetManager::createModernRedlinePreset() {
     preset.densityCurve.centerMultiplier = 0.7f;
     preset.densityCurve.flowMultiplier = 1.5f;
     
-    preset.styleWeights["glow"] = 1.0f;
-    preset.styleWeights["contrast"] = 0.9f;
-    preset.styleWeights["layering"] = 0.8f;
+    preset.styleWeights["contrast"] = 1.0f;
+    preset.styleWeights["structure"] = 0.9f;
+    preset.styleWeights["accent"] = 0.7f;
     
     // IDs verified against the 2.2081 object catalogue. These are decorative
     // rods, clouds, gears, bricks, wavy trims and pipe/highlight pieces.
