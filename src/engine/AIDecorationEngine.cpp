@@ -190,7 +190,8 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateEdgeDecorations(
         if (zone.zoneType != "edge" || zone.decorationDensity <= 0.0f) continue;
         
         int decorationCount = static_cast<int>(zone.area.size.width * zone.area.size.height * zone.decorationDensity * 0.01f * (1.0f + chaosScale * 0.5f));
-        decorationCount = std::clamp(decorationCount, 2, 15);
+        decorationCount = std::clamp(decorationCount, 0, 15);
+        if (decorationCount == 0) continue;
         
         for (int i = 0; i < decorationCount; ++i) {
             DecorationPlacement placement;
@@ -218,7 +219,8 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateFillDecorations(
         if (zone.zoneType != "fill" || zone.decorationDensity <= 0.0f) continue;
         
         int decorationCount = static_cast<int>(zone.area.size.width * zone.area.size.height * zone.decorationDensity * 0.005f * detailScale);
-        decorationCount = std::clamp(decorationCount, 1, 8);
+        decorationCount = std::clamp(decorationCount, 0, 8);
+        if (decorationCount == 0) continue;
         
         for (int i = 0; i < decorationCount; ++i) {
             DecorationPlacement placement;
@@ -282,7 +284,8 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateMicroDetails(
         if (zone.zoneType != "edge" && zone.zoneType != "corner") continue;
         
         int detailCount = static_cast<int>(zone.decorationDensity * detailScale * 3.0f);
-        detailCount = std::clamp(detailCount, 1, 5);
+        detailCount = std::clamp(detailCount, 0, 5);
+        if (detailCount == 0) continue;
         
         for (int i = 0; i < detailCount; ++i) {
             DecorationPlacement placement;
