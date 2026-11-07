@@ -2,6 +2,7 @@
 #include <Geode/Geode.hpp>
 #include <algorithm>
 #include <sstream>
+#include <utility>
 
 namespace AutoDecoratorAI::AI {
 namespace {
@@ -111,7 +112,8 @@ std::string DecorationPlan::makeSummary() const {
     return out.str();
 }
 
-bool DecorationPlanParser::parse(const std::string& response, DecorationPlan& out, std::string& error) {
+bool DecorationPlanParser::parse(const std::string& response, const std::vector<int>& allowedObjectIds,
+                                 DecorationPlan& out, std::string& error) {
     error.clear();
     if (response.empty() || response.size() > 24000) {
         error = "The AI response is empty or exceeds the 24 KB plan limit.";
@@ -157,6 +159,56 @@ bool DecorationPlanParser::parse(const std::string& response, DecorationPlan& ou
             return false;
         }
         candidate.layers.push_back(std::move(layer));
+    }
+
+    const auto& placements = root["placements"];
+    if (!placements.isArray() || placements.size() == 0 || placements.size() > 120) {
+        error = "The plan must contain between 1 and 120 object placements.";
+        return false;
+    }
+
+    for (const auto& item : placements) {
+        if (!item.isObject()) {
+            error = "Each placement must be a JSON object.";
+            return false;
+        }
+
+        auto objectId = item["object_id"].asInt().unwrapOr(-1);
+        auto x = item["x"].asDouble().unwrapOr(-1.0);
+        auto y = item["y"].asDouble().unwrapOr(-1.0);
+        auto scale = item["scale"].asDouble().unwrapOr(1.0);
+        auto rotation = item["rotation"].asDouble().unwrapOr(0.0);
+        auto color = item["color"].asString().unwrapOr("#FFFFFF");
+
+        if (objectId <= 0 ||
+            std::find(allowedObjectIds.begin(), allowedObjectIds.end(), static_cast<int>(objectId)) == allowedObjectIds.end()) {
+            error = "A placement references an object that is not in the verified decoration catalogue.";
+            return false;
+        }
+        if (x < 0.0 || x > 1.0 || y < 0.0 || y > 1.0) {
+            error = "Placement coordinates must be normalized between 0 and 1.";
+            return false;
+        }
+        if (scale < 0.25 || scale > 3.0 || rotation < -360.0 || rotation > 360.0) {
+            error = "A placement has an unsafe scale or rotation value.";
+            return false;
+        }
+        if (color.size() != 7 || color[0] != '#' ||
+            !std::all_of(color.begin() + 1, color.end(), [](unsigned char ch) {
+                return std::isxdigit(ch) != 0;
+            })) {
+            error = "Placement colors must use #RRGGBB hex format.";
+            return false;
+        }
+
+        candidate.placements.push_back(ObjectPlacement{
+            static_cast<int>(objectId),
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(scale),
+            static_cast<float>(rotation),
+            color
+        });
     }
 
     out = std::move(candidate);
