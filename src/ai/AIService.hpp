@@ -22,7 +22,7 @@ private:
     void handleResponse(web::WebResponse response);
 
     ProviderRouter m_router;
-    TaskHolder<web::WebResponse> m_requestTask;
+    async::TaskHolder<web::WebResponse> m_requestTask;
     std::string m_userPrompt;
     Completion m_completion;
 };
