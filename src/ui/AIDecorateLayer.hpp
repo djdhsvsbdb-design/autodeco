@@ -50,6 +50,9 @@ private:
     bool m_isVisible;
     AIPreset* m_currentPreset;
     std::vector<AIPreset> m_availablePresets;
+    std::vector<DecorationPlacement> m_previewPlacements;
+    std::vector<cocos2d::CCPoint> m_previewSelectionPositions;
+    bool m_hasPreview = false;
     
     // Callbacks
     void onToggle(CCObject* sender);
