@@ -77,10 +77,19 @@ void AIDecorateLayer::createOverlayPanel() {
     auto winSize = CCDirector::sharedDirector()->getWinSize();
     constexpr float panelWidth = 420.f;
     constexpr float panelHeight = 300.f;
+    // Soft white halo behind the dark editor panel.
+    auto glow = CCScale9Sprite::create("square02_001.png");
+    glow->setContentSize(CCSize(panelWidth + 10.f, panelHeight + 10.f));
+    glow->setPosition(winSize.width / 2.f, winSize.height / 2.f);
+    glow->setColor(ccc3(255, 255, 255));
+    glow->setOpacity(42);
+    this->addChild(glow, 9);
+
     auto panel = CCScale9Sprite::create("square02_001.png");
     panel->setContentSize(CCSize(panelWidth, panelHeight));
     panel->setPosition(winSize.width / 2.f, winSize.height / 2.f);
-    panel->setOpacity(220);
+    panel->setColor(ccc3(8, 8, 12));
+    panel->setOpacity(248);
     const float fitScale = std::min(
         1.f,
         std::min((winSize.width - 20.f) / panelWidth,
@@ -99,12 +108,14 @@ void AIDecorateLayer::createPresetSelector() {
     auto heading = CCLabelBMFont::create("PRESETS", "bigFont.fnt");
     heading->setPosition(105.f, panelSize.height - 28.f);
     heading->setScale(0.42f);
+    heading->setColor(ccc3(255, 255, 255));
     m_overlayPanel->addChild(heading);
     m_presetLabel = CCLabelBMFont::create(
         m_currentPreset ? m_currentPreset->name.c_str() : "None", "goldFont.fnt"
     );
     m_presetLabel->setPosition(105.f, panelSize.height - 48.f);
     m_presetLabel->setScale(0.38f);
+    m_presetLabel->setColor(ccc3(255, 255, 255));
     m_overlayPanel->addChild(m_presetLabel);
     m_presetMenu = CCMenu::create();
     m_presetMenu->setPosition(105.f, panelSize.height - 76.f);
@@ -118,6 +129,7 @@ void AIDecorateLayer::updatePresetDropdown() {
         const auto& preset = m_availablePresets[i];
         auto label = CCLabelBMFont::create(preset.name.c_str(), "chatFont.fnt");
         label->setScale(0.34f);
+        label->setColor(ccc3(255, 255, 255));
         auto button = CCMenuItemLabel::create(
             label, this, menu_selector(AIDecorateLayer::onPresetChanged)
         );
@@ -141,6 +153,7 @@ void AIDecorateLayer::createSliders() {
         auto label = CCLabelBMFont::create(names[i], "bigFont.fnt");
         label->setPosition(labelX, y);
         label->setScale(0.34f);
+        label->setColor(ccc3(255, 255, 255));
         m_overlayPanel->addChild(label);
         SEL_MenuHandler callback =
             i == 0 ? menu_selector(AIDecorateLayer::onDensityChanged) :
@@ -184,6 +197,7 @@ void AIDecorateLayer::createToggles() {
         auto label = CCLabelBMFont::create(item.label, "bigFont.fnt");
         label->setPosition(item.x + 17.f, item.y);
         label->setScale(0.32f);
+        label->setColor(ccc3(255, 255, 255));
         label->setAnchorPoint(CCPoint(0.f, 0.5f));
         m_overlayPanel->addChild(label);
     }
@@ -214,6 +228,7 @@ void AIDecorateLayer::createProgressDisplay() {
     m_progressLabel = CCLabelBMFont::create("", "bigFont.fnt");
     m_progressLabel->setPosition(105.f, 24.f);
     m_progressLabel->setScale(0.32f);
+    m_progressLabel->setColor(ccc3(255, 255, 255));
     m_progressLabel->setVisible(false);
     m_overlayPanel->addChild(m_progressLabel);
     auto progressSprite = CCSprite::createWithSpriteFrameName("barbg.png");
