@@ -82,8 +82,43 @@ void AIService::handleResponse(web::WebResponse response) {
     const std::string responseBody = response.string().unwrapOr("");
 
     if (response.ok()) {
-        m_router.markSuccess();
-        if (m_completion) m_completion(true, responseBody, "AI provider responded successfully.");
+        // OpenAI-compatible endpoints wrap generated text in choices[0].message.content.
+        // Some compatible services return the plan JSON directly, so support both formats.
+        std::string generatedText;
+        auto envelopeResult = matjson::Value::parse(responseBody);
+        if (envelopeResult) {
+            auto envelope = envelopeResult.unwrapOr(matjson::Value{});
+            if (envelope.isObject() && envelope["choices"].isArray() &&
+                envelope["choices"].size() > 0) {
+                const auto& choice = envelope["choices"][0];
+                generatedText = choice["message"]["content"].asString().unwrapOr("");
+                if (generatedText.empty()) {
+                    generatedText = choice["text"].asString().unwrapOr("");
+                }
+            }
+            else if (envelope.isObject() && envelope.contains("style") &&
+                     envelope.contains("layers")) {
+                generatedText = responseBody;
+            }
+        }
+
+        if (!generatedText.empty()) {
+            m_router.markSuccess();
+            if (m_completion) {
+                m_completion(true, std::move(generatedText), "AI provider responded successfully.");
+            }
+            return;
+        }
+
+        log::warn("AI provider returned HTTP success but no usable plan content.");
+        auto next = m_router.advanceAfterFailure(ProviderFailureKind::Unknown, status);
+        if (next) {
+            sendCurrentRequest();
+            return;
+        }
+        if (m_completion) {
+            m_completion(false, {}, "The AI providers responded, but none returned a usable JSON plan.");
+        }
         return;
     }
 
