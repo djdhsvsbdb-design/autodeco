@@ -171,13 +171,29 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         auto endpoint = mod->getSettingValue<std::string>(endpointKey);
         auto model = mod->getSettingValue<std::string>(modelKey);
         auto apiKey = mod->getSettingValue<std::string>(keyKey);
-        if (!endpoint.empty() && !model.empty() && !apiKey.empty()) {
+        const bool secureEndpoint = endpoint.rfind("https://", 0) == 0;
+        const bool localEndpoint =
+            endpoint.rfind("http://localhost", 0) == 0 ||
+            endpoint.rfind("http://127.0.0.1", 0) == 0;
+        if (!endpoint.empty() && !model.empty() && !apiKey.empty() &&
+            (secureEndpoint || localEndpoint)) {
             providers.push_back(AI::ProviderConfig{id, name, endpoint, model, apiKey, true});
         }
     };
 
     addProvider("primary", "Primary provider", "provider-1-endpoint", "provider-1-model", "provider-1-key");
     addProvider("backup", "Backup provider", "provider-2-endpoint", "provider-2-model", "provider-2-key");
+    addProvider("fallback", "Fallback provider", "provider-3-endpoint", "provider-3-model", "provider-3-key");
+
+    if (providers.empty()) {
+        FLAlertLayer::create(
+            "AI Provider Setup",
+            "Configure at least one provider with an endpoint, model, and API key. "
+            "Use HTTPS endpoints (HTTP is allowed only for localhost).",
+            "OK"
+        )->show();
+        return;
+    }
 
     AI::AIService::get()->setProviders(std::move(providers));
     m_isGenerating = true;
