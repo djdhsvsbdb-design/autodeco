@@ -1,40 +1,23 @@
-cmake_minimum_required(VERSION 3.15)
-project(Alt3rDECO)
+cmake_minimum_required(VERSION 3.21)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-# Source files
-set(SOURCES
-    src/ModMain.cpp
-    src/ui/AIDecorateLayer.cpp
-    src/engine/AIDecorationEngine.cpp
-    src/engine/GeometryAnalyzer.cpp
-    src/engine/PatternDetector.cpp
-    src/presets/AIPresetManager.cpp
-    src/presets/AIPresetData.cpp
-)
+project(Alt3rDECO VERSION 1.1.0)
 
-# Header files
-set(HEADERS
-    src/ui/AIDecorateLayer.hpp
-    src/engine/AIDecorationEngine.hpp
-    src/engine/GeometryAnalyzer.hpp
-    src/engine/PatternDetector.hpp
-    src/presets/AIPresetManager.hpp
-    src/presets/AIPresetData.hpp
-)
+# Collect the mod sources without hard-coding the file list.
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
-# Create shared library (DLL)
-add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+if (NOT DEFINED ENV{GEODE_SDK})
+    message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode.")
+else()
+    message(STATUS "Found Geode SDK: $ENV{GEODE_SDK}")
+endif()
 
-# Set output name
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "Alt3rDECO"
-    PREFIX ""
-    SUFFIX ".dll"
-)
+add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
+
+# Geode handles platform-specific linking, metadata validation, and .geode packaging.
+setup_geode_mod(${PROJECT_NAME})
