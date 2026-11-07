@@ -42,10 +42,10 @@ GeometryCluster GeometryAnalyzer::classifyCluster(const std::vector<Ref<GameObje
     GeometryCluster cluster;
     cluster.objects = objects;
     cluster.boundingBox = computeBoundingBox(objects);
+    cluster.centroid = computeCentroid(objects);
     cluster.shapeType = detectShapeType(cluster);
     cluster.density = computeDensity(cluster);
     cluster.visualImportance = computeVisualImportance(cluster);
-    cluster.centroid = computeCentroid(objects);
     
     return cluster;
 }
