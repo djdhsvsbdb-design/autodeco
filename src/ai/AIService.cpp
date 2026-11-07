@@ -49,9 +49,13 @@ void AIService::sendCurrentRequest() {
         "You are an expert Geometry Dash level decorator. Return a valid, concise JSON design plan only. "
         "Use this schema: {\\"style\\":string,\\"palette\\":[string],\\"mood\\":string,"
         "\\"layers\\":[{\\"name\\":string,\\"purpose\\":string,\\"elements\\":[string],"
-        "\\"placement\\":string,\\"color\\":string}] ,\\"notes\\":[string]}. "
-        "Do not invent Geometry Dash object IDs or claim that objects were placed in the level. "
-        "Describe visual intent, relative positions, colors, layering, and how decoration follows the selected geometry.";
+        "\\"placement\\":string,\\"color\\":string}],\\"notes\\":[string],"
+        "\\"placements\\":[{\\"object_id\\":integer,\\"x\\":number,\\"y\\":number,"
+        "\\"scale\\":number,\\"rotation\\":number,\\"color\\":\\"#RRGGBB\\"}]}. "
+        "Only use object IDs explicitly present in the user's verified decoration catalogue. "
+        "Coordinates x/y must be normalized from 0 to 1 within the selected area. "
+        "Scale must be 0.25 to 3, rotation -360 to 360, and colors must be #RRGGBB. "
+        "Return 1-120 placements. Preserve gameplay clearance. Never claim objects have already been placed.";
 
     matjson::Value userMessage;
     userMessage["role"] = "user";
