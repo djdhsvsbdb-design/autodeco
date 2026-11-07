@@ -79,6 +79,14 @@ std::vector<AIPreset> AIPresetManager::getAllPresets() const {
     for (const auto& pair : m_presets) {
         presets.push_back(pair.second);
     }
+
+    // Keep the default Modern Redline preset at the top, then use stable
+    // alphabetical ordering instead of unordered_map iteration order.
+    std::sort(presets.begin(), presets.end(), [](const AIPreset& a, const AIPreset& b) {
+        if (a.id == "builtin_modern_redline") return b.id != "builtin_modern_redline";
+        if (b.id == "builtin_modern_redline") return false;
+        return a.name < b.name;
+    });
     return presets;
 }
 
