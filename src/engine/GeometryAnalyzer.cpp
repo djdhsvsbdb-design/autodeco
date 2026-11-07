@@ -280,8 +280,11 @@ bool GeometryAnalyzer::isVerticalStructure(const std::vector<Ref<GameObject>>& o
     if (objects.size() < 3) return false;
     
     auto bbox = computeBoundingBox(objects);
-    float aspectRatio = bbox.size.height / bbox.size.width;
-    
+    if (bbox.size.width <= 0.0f || bbox.size.height <= 0.0f) {
+        return false;
+    }
+    const float aspectRatio = bbox.size.height / bbox.size.width;
+
     return aspectRatio > 2.0f;
 }
 
