@@ -1,27 +1,33 @@
 # AI Decorator 3.0 for Geometry Dash
 
-A Geode mod that turns a natural-language decoration brief into a structured AI design plan.
+A Geode mod that converts a natural-language brief into a validated decoration plan and applies generated decorative objects inside the Geometry Dash editor.
 
-## 3.0 work in progress
+## Version 3.0 implementation
 
-- Prompt-first editor interface; the old preset-driven Auto Deco generator is removed.
-- Primary, backup, and fallback OpenAI-compatible providers with automatic failover for rate limits, quota exhaustion, network errors, unavailable models, and server errors.
-- Normalizes standard chat-completions responses and direct JSON-plan responses.
-- Validates AI output before preview: required fields, array types, string lengths, layer counts, palette limits, and response-size limits.
-- Shows a readable preview of style, mood, palette, decoration layers, placement guidance, and notes.
-- API keys remain in local Geode settings; never commit keys or paste them into public issues.
-
-## Current limitation
-
-The 3.0 branch does not yet apply generated decoration objects to the level. The AI plan is validated and previewed only. The next implementation stage is to translate the plan into a bounded set of verified Geometry Dash decoration objects, create them through the editor API, and register one undoable batch. This must be tested in the target Geometry Dash + Geode SDK version before being enabled.
+- Replaces the old preset-driven Auto Deco workflow with a prompt-first AI interface.
+- Reads the selected editor area and computes its bounds.
+- Builds a runtime whitelist from the Geometry Dash ObjectToolbox. Only objects classified by the game as `GameObjectType::Decoration` are offered to the model.
+- Supports three OpenAI-compatible providers (primary, backup, fallback). Rate limits, quota exhaustion, network errors, unavailable models, server errors, and malformed successful responses trigger failover.
+- Requires structured JSON containing decoration layers and 1-120 object placements.
+- Validates every object ID against the runtime whitelist; validates normalized coordinates, scale, rotation, color, array sizes, and response size.
+- Shows a preview before any editor changes.
+- Applies only after the user presses **Apply Decoration**. Generated objects are serialized and sent through Geometry Dash's native editor paste API.
 
 ## Provider setup
 
-In the mod's Geode settings, configure endpoint, model, and API key for the primary provider. Configure the backup and fallback providers to enable multi-step failover. Only HTTPS endpoints are accepted, except localhost for local development. Endpoints must be OpenAI-compatible chat-completions URLs. Use HTTPS endpoints; keep keys private.
+In the mod's Geode settings, configure endpoint, model, and API key for at least one provider. Configure backup/fallback providers to enable multi-step failover. Use HTTPS endpoints; HTTP is accepted only for localhost development.
+
+API keys are stored in local Geode mod settings. Never commit keys or post them in public issues.
+
+## Safety and current verification status
+
+The plan is bounded to decorative object IDs discovered from the installed game's own object toolbox. It cannot request arbitrary triggers, portals, hazards, or gameplay objects. Placements are limited to the selected area's bounds and capped at 120 objects per generation. The user must review the plan and explicitly apply it.
+
+The code uses Geometry Dash's native `EditorUI::pasteObjects` path so the editor can manage the generated batch like a paste action. **Undo behavior, placement offsets, color rendering, and actual in-game compatibility still require an SDK build and an in-game test.** This repository change has not yet been built against the user's local Geode SDK.
 
 ## Build
 
-Requires Windows, CMake, Visual Studio C++ tools, Geode SDK 2.0+, and Geometry Dash 2.2081. The project must be built and tested against the installed SDK before release.
+Requires Windows, CMake 3.21+, Visual Studio C++ tools, Geode SDK 2.0+, and Geometry Dash 2.2081. Set the `GEODE_SDK` environment variable to the Geode SDK directory.
 
 ```sh
 cmake -S . -B build
