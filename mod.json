@@ -5,9 +5,9 @@
     },
     "id": "autodecoratorai.reid",
     "name": "Alt3rDECO",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "developer": "Reid",
-    "description": "Alt3rDECO: adaptive procedural decoration assistant for selected Geometry Dash editor objects.",
+    "description": "Alt3rDECO: procedural decoration assistant with curated Geometry Dash 2.2081 object pools for selected Geometry Dash editor objects.",
     "repository": "https://github.com/djdhsvsbdb-design/autodeco",
     "settings": {
         "default-density": {
