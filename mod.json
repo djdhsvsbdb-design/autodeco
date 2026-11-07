@@ -1,38 +1,51 @@
 {
-    "geode": "2.0.0",
-    "version": "1.0.0",
-    "id": "autodecoratorai.reid",
-    "name": "Auto Decorator AI",
-    "developer": "Reid",
-    "description": "Intelligent AI-powered decoration system for Geometry Dash editor. Analyzes geometry and generates human-like decoration patterns with adaptive procedural rules.",
-    "repository": "https://github.com/reid/autodecoratorai",
-    "dependencies": [
-        {
-            "id": "geode",
-            "version": ">=2.0.0"
-        }
-    ],
-    "settings": {
-        "default-density": {
-            "type": "float",
-            "default": 0.5,
-            "min": 0.0,
-            "max": 1.0,
-            "name": "Default Decoration Density",
-            "description": "Default density for AI decoration generation"
-        },
-        "default-chaos": {
-            "type": "float",
-            "default": 0.3,
-            "min": 0.0,
-            "max": 1.0,
-            "name": "Default Chaos Factor",
-            "description": "Default randomness for decoration placement"
-        }
-    },
-    "resources": {
-        "sprites": [
-            "resources/sprites/*.png"
-        ]
+  "geode": "2.0.0",
+  "version": "1.1.0",
+  "id": "autodecoratorai.reid",
+  "name": "AI Decorator",
+  "developer": "Reid",
+  "description": "Prompt-driven Geometry Dash decoration planner with automatic AI provider failover.",
+  "repository": "https://github.com/djdhsvsbdb-design/autodeco",
+  "dependencies": [
+    {
+      "id": "geode",
+      "version": ">=2.0.0"
     }
+  ],
+  "settings": {
+    "provider-1-endpoint": {
+      "type": "string",
+      "default": "",
+      "name": "Primary AI endpoint",
+      "description": "OpenAI-compatible chat completions URL."
+    },
+    "provider-1-model": {
+      "type": "string",
+      "default": "",
+      "name": "Primary AI model"
+    },
+    "provider-1-key": {
+      "type": "string",
+      "default": "",
+      "name": "Primary AI API key",
+      "description": "Stored in local Geode mod settings; never share it."
+    },
+    "provider-2-endpoint": {
+      "type": "string",
+      "default": "",
+      "name": "Backup AI endpoint",
+      "description": "Used automatically when the primary provider fails."
+    },
+    "provider-2-model": {
+      "type": "string",
+      "default": "",
+      "name": "Backup AI model"
+    },
+    "provider-2-key": {
+      "type": "string",
+      "default": "",
+      "name": "Backup AI API key",
+      "description": "Stored in local Geode mod settings; never share it."
+    }
+  }
 }
