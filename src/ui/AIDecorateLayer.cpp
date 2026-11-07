@@ -2,7 +2,7 @@
 #include "../presets/AIPresetManager.hpp"
 #include <Geode/Geode.hpp>
 
-using namespace geode::preload;
+using namespace geode::prelude;
 
 namespace AutoDecoratorAI {
 
@@ -466,7 +466,7 @@ void AIDecorateLayer::onApply(CCObject* sender) {
 }
 
 void AIDecorateLayer::onSavePreset(CCObject* sender) {
-    auto input = TextInput::create("Preset Name", "Enter preset name");
+    auto input = TextInput::create(220.f, "Enter preset name");
     input->setCallback([this](const std::string& name) {
         if (name.empty()) return;
         
