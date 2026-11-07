@@ -63,7 +63,7 @@ void AIService::sendCurrentRequest() {
     userMessage["role"] = "user";
     userMessage["content"] =
         "Create a practical decoration plan for the selected Geometry Dash level area. "
-        "The selected-object count and the user's visual brief are included below. "
+        "The selected-area dimensions, verified decorative object catalogue, and user's visual brief are included below. "
         "Avoid covering gameplay-critical paths. User brief: " + m_userPrompt;
 
     body["messages"].push_back(systemMessage);
