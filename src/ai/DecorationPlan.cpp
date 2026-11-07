@@ -174,14 +174,21 @@ bool DecorationPlanParser::parse(const std::string& response, const std::vector<
             return false;
         }
 
+        if (!item["object_id"].isNumber() || !item["x"].isNumber() ||
+            !item["y"].isNumber() || !item["scale"].isNumber() ||
+            !item["rotation"].isNumber() || !item["color"].isString()) {
+            error = "A placement is missing a required numeric or color field.";
+            return false;
+        }
+
         auto objectId = item["object_id"].asInt().unwrapOr(-1);
         auto x = item["x"].asDouble().unwrapOr(-1.0);
         auto y = item["y"].asDouble().unwrapOr(-1.0);
         auto scale = item["scale"].asDouble().unwrapOr(1.0);
         auto rotation = item["rotation"].asDouble().unwrapOr(0.0);
-        auto color = item["color"].asString().unwrapOr("#FFFFFF");
+        auto color = item["color"].asString().unwrapOr("");
 
-        if (objectId <= 0 ||
+        if (objectId <= 0 || objectId > 1000000 ||
             std::find(allowedObjectIds.begin(), allowedObjectIds.end(), static_cast<int>(objectId)) == allowedObjectIds.end()) {
             error = "A placement references an object that is not in the verified decoration catalogue.";
             return false;
