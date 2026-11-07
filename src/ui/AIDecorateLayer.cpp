@@ -186,6 +186,7 @@ void AIDecorateLayer::showOverlay() {
 
 void AIDecorateLayer::hideOverlay() {
     if (!m_overlayPanel) return;
+    if (m_promptInput) m_promptInput->defocus();
     m_overlayPanel->stopAllActions();
     m_overlayPanel->setVisible(false);
     m_isVisible = false;
