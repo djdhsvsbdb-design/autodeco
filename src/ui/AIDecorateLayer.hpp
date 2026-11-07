@@ -22,7 +22,6 @@ private:
     void hideOverlay();
 
     void onToggle(CCObject* sender);
-    void onSetPrompt(CCObject* sender);
     void onGenerate(CCObject* sender);
     void onApply(CCObject* sender);
 
@@ -33,6 +32,7 @@ private:
     CCNode* m_overlayPanel = nullptr;
     CCMenu* m_mainMenu = nullptr;
     CCLabelBMFont* m_promptLabel = nullptr;
+    TextInput* m_promptInput = nullptr;
     CCLabelBMFont* m_statusLabel = nullptr;
     CCMenuItemSpriteExtra* m_applyButton = nullptr;
 
