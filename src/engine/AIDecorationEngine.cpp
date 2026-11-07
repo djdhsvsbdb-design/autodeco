@@ -98,14 +98,23 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorations(
     // Validate and filter placements
     std::vector<DecorationPlacement> validatedPlacements;
     for (const auto& placement : allPlacements) {
-        bool valid = true;
+        bool belongsToCluster = false;
+        bool valid = false;
+
+        // A placement belongs to one cluster, not every cluster. Requiring it
+        // to fit all cluster bounds discarded all placements when selections
+        // contained two or more separated groups.
         for (const auto& cluster : clusters) {
-            if (!validatePlacement(placement, cluster, validatedPlacements)) {
-                valid = false;
-                break;
+            if (!cluster.boundingBox.containsPoint(placement.position)) {
+                continue;
             }
+
+            belongsToCluster = true;
+            valid = validatePlacement(placement, cluster, validatedPlacements);
+            break;
         }
-        if (valid) {
+
+        if (belongsToCluster && valid) {
             validatedPlacements.push_back(placement);
         }
     }
@@ -478,12 +487,9 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
         return;
     }
     
-    // Batch object creation to prevent frame freezing
-    const int batchSize = 10;
-    for (size_t i = 0; i < placements.size(); i += batchSize) {
-        size_t end = std::min(i + batchSize, placements.size());
-        
-        for (size_t j = i; j < end; ++j) {
+    // Apply in one editor-thread pass. Do not sleep on the game thread:
+    // sleeping here freezes input/rendering and does not create a real async batch.
+    for (size_t j = 0; j < placements.size(); ++j) {
             const auto& placement = placements[j];
             
             // Create the object
@@ -496,10 +502,6 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
                 // Add to level
                 editorLayer->addToObjects(obj);
             }
-        }
-        
-        // Small delay between batches
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     
     // Refresh editor
