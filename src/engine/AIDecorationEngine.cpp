@@ -526,15 +526,13 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
             continue;
         }
 
-        // Create the object
-        auto obj = GameObject::create(placement.objectID);
+        // EditorUI::createObject is the supported editor creation path.
+        // It registers the object with the editor's object/undo bookkeeping.
+        auto obj = editorUI->createObject(placement.objectID);
         if (obj) {
             obj->setPosition(placement.position);
             obj->setRotation(placement.rotation);
             obj->setScale(placement.scale);
-
-            // Add to level
-            editorLayer->addToObjects(obj);
         }
     }
     
