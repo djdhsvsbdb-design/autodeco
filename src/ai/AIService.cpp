@@ -39,20 +39,26 @@ void AIService::sendCurrentRequest() {
     const auto& provider = attempt->provider;
     matjson::Value body;
     body["model"] = provider.model;
-    body["temperature"] = 0.35;
+    body["temperature"] = 0.25;
+    body["max_tokens"] = 1800;
     body["messages"] = matjson::Value::array();
 
     matjson::Value systemMessage;
     systemMessage["role"] = "system";
     systemMessage["content"] =
-        "You are a Geometry Dash level decoration planner. Return a concise JSON decoration plan only. "
-        "Do not invent unsupported object IDs. If object IDs are not supplied, describe decoration intent "
-        "using semantic categories, positions relative to the selected geometry, colors, and layer roles.";
+        "You are an expert Geometry Dash level decorator. Return a valid, concise JSON design plan only. "
+        "Use this schema: {\\"style\\":string,\\"palette\\":[string],\\"mood\\":string,"
+        "\\"layers\\":[{\\"name\\":string,\\"purpose\\":string,\\"elements\\":[string],"
+        "\\"placement\\":string,\\"color\\":string}] ,\\"notes\\":[string]}. "
+        "Do not invent Geometry Dash object IDs or claim that objects were placed in the level. "
+        "Describe visual intent, relative positions, colors, layering, and how decoration follows the selected geometry.";
 
     matjson::Value userMessage;
     userMessage["role"] = "user";
     userMessage["content"] =
-        "Create a decoration plan for this Geometry Dash level selection. Prompt: " + m_userPrompt;
+        "Create a practical decoration plan for the selected Geometry Dash level area. "
+        "The selected-object count and the user's visual brief are included below. "
+        "Avoid covering gameplay-critical paths. User brief: " + m_userPrompt;
 
     body["messages"].push_back(systemMessage);
     body["messages"].push_back(userMessage);
