@@ -370,8 +370,12 @@ bool AIPresetManager::loadPresetFromFile(const std::string& filePath) {
         }
         std::stringstream buffer;
         buffer << file.rdbuf();
-        auto json = matjson::parse(buffer.str());
-        AIPreset preset = AIPreset::fromJson(json);
+        auto parsed = matjson::parse(buffer.str());
+        if (!parsed) {
+            log::warn("Invalid preset JSON in {}: {}", filePath, parsed.unwrapErr());
+            return false;
+        }
+        AIPreset preset = AIPreset::fromJson(parsed.unwrap());
         if (!isSafePresetId(preset.id)) {
             log::warn("Rejected preset with unsafe id from {}", filePath);
             return false;
