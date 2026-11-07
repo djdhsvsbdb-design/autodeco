@@ -1,4 +1,5 @@
 #include "AIService.hpp"
+#include "DecorationPlan.hpp"
 #include <Geode/Geode.hpp>
 #include <chrono>
 #include <utility>
@@ -16,8 +17,9 @@ void AIService::setProviders(std::vector<ProviderConfig> providers) {
     m_router.setProviders(std::move(providers));
 }
 
-void AIService::generateDecorationPlan(const std::string& userPrompt, Completion completion) {
+void AIService::generateDecorationPlan(const std::string& userPrompt, std::vector<int> allowedObjectIds, Completion completion) {
     m_userPrompt = userPrompt;
+    m_allowedObjectIds = std::move(allowedObjectIds);
     m_completion = std::move(completion);
     m_router.beginRequest();
 
@@ -107,9 +109,25 @@ void AIService::handleResponse(web::WebResponse response) {
         }
 
         if (!generatedText.empty()) {
+            DecorationPlan validatedPlan;
+            std::string validationError;
+            if (!DecorationPlanParser::parse(generatedText, m_allowedObjectIds, validatedPlan, validationError)) {
+                log::warn("AI provider returned an invalid decoration plan: {}", validationError);
+                auto next = m_router.advanceAfterFailure(ProviderFailureKind::Unknown, status);
+                if (next) {
+                    sendCurrentRequest();
+                    return;
+                }
+                if (m_completion) {
+                    m_completion(false, {}, "All configured providers returned invalid plans. Last validation error: " +
+                        validationError);
+                }
+                return;
+            }
+
             m_router.markSuccess();
             if (m_completion) {
-                m_completion(true, std::move(generatedText), "AI provider responded successfully.");
+                m_completion(true, std::move(generatedText), "AI provider returned a validated decoration plan.");
             }
             return;
         }
