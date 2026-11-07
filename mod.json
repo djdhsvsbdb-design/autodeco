@@ -1,5 +1,5 @@
 {
-  "geode": "2.0.0",
+  "geode": "5.0.0",
   "version": "3.0.0",
   "id": "autodecoratorai.reid",
   "name": "AI Decorator",
@@ -9,7 +9,7 @@
   "dependencies": [
     {
       "id": "geode",
-      "version": ">=2.0.0"
+      "version": ">=5.0.0"
     }
   ],
   "settings": {
