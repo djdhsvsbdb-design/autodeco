@@ -101,7 +101,7 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorations(
     std::vector<DecorationPlacement> validatedPlacements;
     for (const auto& placement : allPlacements) {
         // Never emit a placeholder or invalid object ID from a malformed preset.
-        if (placement.objectID <= 0) {
+        if (!isAllowedDecorationObjectID(placement.objectID)) {
             continue;
         }
 
@@ -317,7 +317,7 @@ DecorationPlacement AIDecorationEngine::selectDecorationObject(
     // when that category is not populated. Never invent an unrelated object ID.
     std::vector<DecorationObject> filtered;
     for (const auto& obj : preset.decorationPool) {
-        if (obj.objectID > 0 && obj.weight > 0.0f &&
+        if (isAllowedDecorationObjectID(obj.objectID) && std::isfinite(obj.weight) && obj.weight > 0.0f &&
             (category.empty() || obj.category == category)) {
             filtered.push_back(obj);
         }
@@ -325,7 +325,7 @@ DecorationPlacement AIDecorationEngine::selectDecorationObject(
 
     if (filtered.empty()) {
         for (const auto& obj : preset.decorationPool) {
-            if (obj.objectID > 0 && obj.weight > 0.0f) {
+            if (isAllowedDecorationObjectID(obj.objectID) && std::isfinite(obj.weight) && obj.weight > 0.0f) {
                 filtered.push_back(obj);
             }
         }
@@ -477,7 +477,7 @@ DecorationObject AIDecorationEngine::selectWeightedObject(const std::vector<Deco
     // Calculate total weight
     float totalWeight = 0.0f;
     for (const auto& obj : pool) {
-        if (obj.objectID > 0 && std::isfinite(obj.weight) && obj.weight > 0.0f) {
+        if (isAllowedDecorationObjectID(obj.objectID) && std::isfinite(obj.weight) && obj.weight > 0.0f) {
             totalWeight += obj.weight;
         }
     }
@@ -491,7 +491,7 @@ DecorationObject AIDecorationEngine::selectWeightedObject(const std::vector<Deco
     
     float currentWeight = 0.0f;
     for (const auto& obj : pool) {
-        if (obj.objectID <= 0 || !std::isfinite(obj.weight) || obj.weight <= 0.0f) {
+        if (!isAllowedDecorationObjectID(obj.objectID) || !std::isfinite(obj.weight) || obj.weight <= 0.0f) {
             continue;
         }
         currentWeight += obj.weight;
