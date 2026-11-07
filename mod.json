@@ -1,10 +1,10 @@
 {
   "geode": "2.0.0",
-  "version": "1.1.0",
+  "version": "3.0.0",
   "id": "autodecoratorai.reid",
   "name": "AI Decorator",
   "developer": "Reid",
-  "description": "Prompt-driven Geometry Dash decoration planner with automatic AI provider failover.",
+  "description": "AI-powered Geometry Dash decoration planning with validated plans and automatic multi-provider failover.",
   "repository": "https://github.com/djdhsvsbdb-design/autodeco",
   "dependencies": [
     {
