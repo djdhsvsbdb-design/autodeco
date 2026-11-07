@@ -1,6 +1,6 @@
 # Alt3rDECO
 
-An intelligent AI-powered decoration system for Geometry Dash 2.2081 (PC) using the Geode modding framework.
+A procedural decoration assistant for Geometry Dash 2.2081 (Windows PC) using the Geode modding framework. Version 2.0 is under active development and is not a stable release.
 
 ## Overview
 
@@ -60,7 +60,7 @@ Alt3rDECO analyzes selected level geometry and automatically generates human-lik
 7. **Validation**: Validate placements (no overlap, no invalid positions)
 8. **Application**: Commit changes to editor with undo support
 
-## Build Instructions
+## Version 2.0 status\n\nThe 2.0 branch is development-only. The object allow-list and built-in preset IDs have been curated against a Geometry Dash 2.2081 object catalogue. Final red/black/gray tinting, visual preview, undo/redo behavior, compilation, and runtime QA are not yet complete. Do not treat the branch as a finished release. See [ROADMAP-2.0.md](ROADMAP-2.0.md).\n\n## Build Instructions
 
 ### Requirements
 - Geode SDK 5.11.2
