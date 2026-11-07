@@ -508,7 +508,8 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
         return;
     }
     
-    auto editorLayer = editorUI->getEditorLayer();
+    // EditorUI exposes its active editor layer through m_editorLayer in GD 2.2081.
+    auto editorLayer = editorUI->m_editorLayer;
     if (!editorLayer) {
         return;
     }
