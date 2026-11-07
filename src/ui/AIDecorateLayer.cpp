@@ -206,7 +206,7 @@ void AIDecorateLayer::createToggles() {
 void AIDecorateLayer::createActionButtons() {
     const float x = 320.f;
     const float ys[] = {112.f, 70.f, 28.f};
-    const char* titles[] = {"Analyze", "Apply Deco", "Save Preset"};
+    const char* titles[] = {"ANALYZE", "APPLY DECO", "SAVE PRESET"};
     SEL_MenuHandler callbacks[] = {
         menu_selector(AIDecorateLayer::onAnalyze),
         menu_selector(AIDecorateLayer::onApply),
@@ -215,10 +215,28 @@ void AIDecorateLayer::createActionButtons() {
     CCMenuItemSpriteExtra** targets[] = {
         &m_analyzeButton, &m_applyButton, &m_savePresetButton
     };
+
     for (int i = 0; i < 3; ++i) {
-        auto sprite = ButtonSprite::create(titles[i]);
-        *targets[i] = CCMenuItemSpriteExtra::create(sprite, this, callbacks[i]);
-        (*targets[i])->setScale(0.62f);
+        // White rounded button with a faint, larger white layer as a glow.
+        auto buttonSprite = CCScale9Sprite::create("square02_001.png");
+        buttonSprite->setContentSize(CCSize(116.f, 30.f));
+        buttonSprite->setColor(ccc3(255, 255, 255));
+        buttonSprite->setOpacity(255);
+
+        auto glow = CCScale9Sprite::create("square02_001.png");
+        glow->setContentSize(CCSize(124.f, 36.f));
+        glow->setPosition(CCPoint(58.f, 15.f));
+        glow->setColor(ccc3(255, 255, 255));
+        glow->setOpacity(55);
+        buttonSprite->addChild(glow, -1);
+
+        auto label = CCLabelBMFont::create(titles[i], "bigFont.fnt");
+        label->setColor(ccc3(8, 8, 12));
+        label->setScale(0.38f);
+        label->setPosition(CCPoint(58.f, 15.f));
+        buttonSprite->addChild(label, 1);
+
+        *targets[i] = CCMenuItemSpriteExtra::create(buttonSprite, this, callbacks[i]);
         (*targets[i])->setPosition(x, ys[i]);
         m_mainMenu->addChild(*targets[i]);
     }
