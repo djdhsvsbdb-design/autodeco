@@ -19,7 +19,7 @@ public:
 private:
     AIService() = default;
     void sendCurrentRequest();
-    void handleResponse(web::WebResponse response);
+    void handleResponse(geode::utils::web::WebResponse response);
 
     ProviderRouter m_router;
     async::TaskHolder<web::WebResponse> m_requestTask;
