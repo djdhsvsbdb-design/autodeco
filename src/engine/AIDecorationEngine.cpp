@@ -536,8 +536,7 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
         }
     }
     
-    // Refresh editor
-    editorUI->reloadUndo();
+    // Refresh the editor's object layer after adding the new objects.
     editorLayer->updateObjects();
 }
 
