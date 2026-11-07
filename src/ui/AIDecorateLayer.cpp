@@ -84,12 +84,22 @@ void AIDecorateLayer::createOverlayPanel() {
     description->setScale(0.43f);
     panel->addChild(description);
 
-    auto promptButton = CCMenuItemSpriteExtra::create(
-        ButtonSprite::create("Write Decoration Prompt"),
-        this, menu_selector(AIDecorateLayer::onSetPrompt)
-    );
-    promptButton->setPosition(width / 2, height - 125.0f);
-    m_mainMenu->addChild(promptButton);
+    m_promptInput = TextInput::create(width - 60.0f, "Describe the decoration style...", "bigFont.fnt");
+    m_promptInput->setMaxCharCount(1500);
+    m_promptInput->setTextAlign(TextInputAlign::Left);
+    m_promptInput->setPosition(width / 2, height - 122.0f);
+    m_promptInput->setScale(0.82f);
+    m_promptInput->setCallback([this](const std::string& value) {
+        m_prompt = value;
+        m_hasValidPlan = false;
+        if (m_applyButton) m_applyButton->setEnabled(false);
+        std::string preview = m_prompt;
+        if (preview.empty()) preview = "No prompt set";
+        else if (preview.size() > 52) preview = preview.substr(0, 49) + "...";
+        if (m_promptLabel) m_promptLabel->setString(preview.c_str());
+        setStatus(m_prompt.empty() ? "Enter a prompt to begin" : "Prompt updated");
+    });
+    panel->addChild(m_promptInput);
 
     m_promptLabel = CCLabelBMFont::create("No prompt set", "chatFont.fnt");
     m_promptLabel->setPosition(width / 2, height - 160.0f);
@@ -146,23 +156,6 @@ void AIDecorateLayer::hideOverlay() {
     m_isVisible = false;
 }
 
-void AIDecorateLayer::onSetPrompt(CCObject*) {
-    auto input = TextInput::create("AI Decoration Prompt", "Describe the decoration style...");
-    input->setCallback([this](const std::string& value) {
-        auto cleaned = value;
-        if (cleaned.size() > 1500) cleaned.resize(1500);
-        m_prompt = cleaned;
-        m_hasValidPlan = false;
-        if (m_applyButton) m_applyButton->setEnabled(false);
-        if (m_promptLabel) {
-            std::string preview = m_prompt;
-            if (preview.size() > 52) preview = preview.substr(0, 49) + "...";
-            m_promptLabel->setString(m_prompt.empty() ? "No prompt set" : preview.c_str());
-        }
-        setStatus(m_prompt.empty() ? "Enter a prompt to begin" : "Prompt saved");
-    });
-    input->show();
-}
 
 void AIDecorateLayer::onGenerate(CCObject*) {
     if (m_isGenerating) return;
