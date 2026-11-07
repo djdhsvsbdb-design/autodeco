@@ -2,10 +2,10 @@
     "geode": "2.0.0",
     "version": "1.0.0",
     "id": "autodecoratorai.reid",
-    "name": "Auto Decorator AI",
+    "name": "Alt3rDECO",
     "developer": "Reid",
-    "description": "Intelligent AI-powered decoration system for Geometry Dash editor. Analyzes geometry and generates human-like decoration patterns with adaptive procedural rules.",
-    "repository": "https://github.com/reid/autodecoratorai",
+    "description": "Alt3rDECO: adaptive procedural decoration assistant for selected Geometry Dash editor objects.",
+    "repository": "https://github.com/djdhsvsbdb-design/autodeco",
     "dependencies": [
         {
             "id": "geode",
