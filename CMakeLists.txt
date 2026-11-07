@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(AutoDecoratorAI)
+project(Alt3rDECO)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -34,7 +34,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # Set output name
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "AutoDecoratorAI"
+    OUTPUT_NAME "Alt3rDECO"
     PREFIX ""
     SUFFIX ".dll"
 )
