@@ -183,10 +183,14 @@ void AIDecorateLayer::onGenerate(CCObject*) {
     m_isGenerating = true;
     setStatus("Contacting AI providers...");
 
+    m_hasValidPlan = false;
     const std::string requestPrompt =
         m_prompt + "\nSelected Geometry Dash objects: " + std::to_string(selected.size()) +
-        ". Return a JSON design plan with semantic decoration categories and relative placement guidance. "
-        "Do not claim that objects have already been added to the level.";
+        ". Return ONLY a JSON object with keys style, mood, palette, layers, notes. "
+        "Each layer must contain name, purpose, elements, placement, color. "
+        "Use 1-8 layers, 1-8 palette entries, and concise text. "
+        "Describe relative placement around the selected area, preserve gameplay clearance, "
+        "and never invent object IDs or claim that anything has already been placed.";
 
     geode::Ref<AIDecorateLayer> self(this);
     AI::AIService::get()->generateDecorationPlan(requestPrompt,
@@ -198,8 +202,20 @@ void AIDecorateLayer::onGenerate(CCObject*) {
                 FLAlertLayer::create("AI Error", message, "OK")->show();
                 return;
             }
-            self->setStatus("AI plan received");
-            FLAlertLayer::create("AI Decoration Plan", response, "Close")->show();
+            AI::DecorationPlan plan;
+            std::string validationError;
+            if (!AI::DecorationPlanParser::parse(response, plan, validationError)) {
+                self->m_hasValidPlan = false;
+                self->setStatus("AI returned an invalid plan");
+                FLAlertLayer::create("Invalid AI Plan", validationError, "Close")->show();
+                return;
+            }
+
+            self->m_lastPlan = std::move(plan);
+            self->m_hasValidPlan = true;
+            self->setStatus("Plan validated - preview ready");
+            auto summary = self->m_lastPlan.makeSummary();
+            FLAlertLayer::create("AI Decoration Preview", summary, "Close")->show();
         }
     );
 }
