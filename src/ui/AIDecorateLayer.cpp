@@ -39,7 +39,8 @@ bool AIDecorateLayer::init(EditorUI* editorUI) {
     m_availablePresets = presetManager->getAllPresets();
     
     if (!m_availablePresets.empty()) {
-        m_currentPreset = &m_availablePresets[0];
+        // Keep the pointer owned by the manager, not by the temporary UI copy.
+        m_currentPreset = presetManager->getPresetById(m_availablePresets[0].id);
     }
     
     // Create UI elements
@@ -490,8 +491,10 @@ void AIDecorateLayer::onSavePreset(CCObject* sender) {
         presetManager->addPreset(newPreset);
         presetManager->saveCustomPresets();
         
-        // Refresh preset list
+        // Refresh the display list and rebind the selected preset pointer.
+        const std::string selectedPresetId = m_currentPreset ? m_currentPreset->id : newPreset.id;
         m_availablePresets = presetManager->getAllPresets();
+        m_currentPreset = presetManager->getPresetById(selectedPresetId);
         updatePresetDropdown();
         
         FLAlertLayer::create("Success", "Preset saved successfully!", "OK")->show();
