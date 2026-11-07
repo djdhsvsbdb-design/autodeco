@@ -1,6 +1,7 @@
 #include "DecorationPlan.hpp"
 #include <Geode/Geode.hpp>
 #include <algorithm>
+#include <cctype>
 #include <sstream>
 #include <utility>
 
