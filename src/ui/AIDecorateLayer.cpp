@@ -488,11 +488,13 @@ void AIDecorateLayer::onSavePreset(CCObject* sender) {
         newPreset.symmetryPreference = m_symmetrySlider->getValue();
         newPreset.microDetailLevel = m_detailSlider->getValue();
         
+        // Capture the ID before inserting into the unordered_map, because
+        // insertion may rehash it and invalidate m_currentPreset.
+        const std::string selectedPresetId = m_currentPreset ? m_currentPreset->id : newPreset.id;
         presetManager->addPreset(newPreset);
         presetManager->saveCustomPresets();
-        
+
         // Refresh the display list and rebind the selected preset pointer.
-        const std::string selectedPresetId = m_currentPreset ? m_currentPreset->id : newPreset.id;
         m_availablePresets = presetManager->getAllPresets();
         m_currentPreset = presetManager->getPresetById(selectedPresetId);
         updatePresetDropdown();
