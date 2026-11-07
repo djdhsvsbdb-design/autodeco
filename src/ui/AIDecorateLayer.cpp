@@ -179,8 +179,6 @@ void AIDecorateLayer::showOverlay() {
     if (!m_overlayPanel) return;
     m_overlayPanel->stopAllActions();
     m_overlayPanel->setVisible(true);
-    m_overlayPanel->setOpacity(0);
-    m_overlayPanel->runAction(CCFadeTo::create(0.18f, 230));
     m_isVisible = true;
 }
 
@@ -217,9 +215,9 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         for (int i = 0; i < keys->count() && m_allowedObjectIds.size() < 80; ++i) {
             auto key = static_cast<CCString*>(keys->objectAtIndex(i));
             if (!key) continue;
-            const char* idText = toolbox->frameToKey(key->getCString());
-            if (!idText) continue;
-            const int objectId = std::atoi(idText);
+            auto idValue = static_cast<CCString*>(toolbox->m_pkeyToFrame->valueForKey(key->getCString()));
+            if (!idValue) continue;
+            const int objectId = std::atoi(idValue->getCString());
             if (objectId <= 0 || !seenIds.insert(objectId).second) continue;
             auto prototype = GameObject::createWithKey(objectId);
             if (!prototype || prototype->getType() != GameObjectType::Decoration) continue;
@@ -362,7 +360,7 @@ void AIDecorateLayer::onApply(CCObject*) {
             static_cast<GLubyte>(rgb & 0xFF)
         });
 
-        const auto saveString = object->getSaveString();
+        const auto saveString = object->getSaveString(m_editorUI->m_editorLayer);
         serialized += saveString.c_str();
         serialized += ";";
         ++accepted;
@@ -374,7 +372,7 @@ void AIDecorateLayer::onApply(CCObject*) {
     }
 
     // Use Geometry Dash's native paste path so the operation is grouped as a normal editor action.
-    auto pasted = m_editorUI->pasteObjects(gd::string(serialized.c_str()));
+    auto pasted = m_editorUI->pasteObjects(gd::string(serialized.c_str()), true, false);
     if (!pasted || pasted->count() == 0) {
         FLAlertLayer::create("Apply Failed", "The editor could not paste the generated decoration.", "OK")->show();
         return;
