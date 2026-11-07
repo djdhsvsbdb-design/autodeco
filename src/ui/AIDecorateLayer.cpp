@@ -278,7 +278,7 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         "color must be #RRGGBB. Keep gameplay paths clear and distribute decoration naturally.";
 
     geode::Ref<AIDecorateLayer> self(this);
-    AI::AIService::get()->generateDecorationPlan(requestPrompt,
+    AI::AIService::get()->generateDecorationPlan(requestPrompt, m_allowedObjectIds,
         [self](bool success, std::string response, std::string message) {
             if (!self) return;
             self->m_isGenerating = false;
