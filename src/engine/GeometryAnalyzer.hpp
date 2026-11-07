@@ -37,7 +37,7 @@ private:
     bool isEnclosedShape(const std::vector<geode::Ref<GameObject>>& objects);
     bool isSparsePlacement(const std::vector<geode::Ref<GameObject>>& objects);
     
-    std::vector<geode::Ref<GameObject>> clusterObjectsByProximity(const std::vector<geode::Ref<GameObject>>& objects, float threshold);
+    std::vector<std::vector<geode::Ref<GameObject>>> clusterObjectsByProximity(const std::vector<geode::Ref<GameObject>>& objects, float threshold);
 };
 
 }
