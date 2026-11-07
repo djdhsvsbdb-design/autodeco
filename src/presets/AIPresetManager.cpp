@@ -6,7 +6,7 @@
 #include <cctype>
 #include <ctime>
 
-using namespace geode::preload;
+using namespace geode::prelude;
 
 namespace AutoDecoratorAI {
 
@@ -23,7 +23,7 @@ bool isSafePresetId(const std::string& id) {
 AIPresetManager* AIPresetManager::s_instance = nullptr;
 
 AIPresetManager::AIPresetManager() {
-    m_presetDirectory = (geode::dirs::getModSaveDir() / "Alt3rDECO" / "presets").string();
+    m_presetDirectory = (geode::dirs::getModsSaveDir() / "Alt3rDECO" / "presets").string();
 }
 
 AIPresetManager::~AIPresetManager() {}
@@ -372,7 +372,7 @@ bool AIPresetManager::loadPresetFromFile(const std::string& filePath) {
         buffer << file.rdbuf();
         auto parsed = matjson::parse(buffer.str());
         if (!parsed) {
-            log::warn("Invalid preset JSON in {}: {}", filePath, parsed.unwrapErr());
+            log::warn("Invalid preset JSON in {}: {}", filePath, parsed.unwrapErr().message);
             return false;
         }
         AIPreset preset = AIPreset::fromJson(parsed.unwrap());
