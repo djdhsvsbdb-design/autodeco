@@ -3,12 +3,11 @@
 #include <Geode/utils/web.hpp>
 #include <algorithm>
 #include <cctype>
-#include <cstdlib>
 #include <limits>
 #include <sstream>
 #include <string_view>
-#include <unordered_set>
 #include <utility>
+#include <vector>
 
 using namespace geode::prelude;
 
@@ -44,6 +43,11 @@ bool isLoopbackHttpEndpoint(const std::string& endpoint) {
         [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
     return host == "localhost" || host == "127.0.0.1" || host == "::1";
 }
+
+struct CatalogueEntry {
+    int objectId;
+    std::string frame;
+};
 
 } // namespace
 
@@ -204,30 +208,39 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         return;
     }
 
-    // Build a runtime whitelist from the actual Geometry Dash object toolbox.
-    // Only objects classified by the game as Decoration can be generated.
+    // ObjectToolbox::allKeys() is not implemented in the public 2.2081
+    // decompilation. The populated m_allKeys map is the runtime source of truth.
+    // Read it directly and retain only objects the game classifies as Decoration.
+    constexpr std::size_t maxCatalogueEntries = 160;
     m_allowedObjectIds.clear();
-    std::ostringstream catalogue;
+    std::vector<CatalogueEntry> candidates;
     auto toolbox = ObjectToolbox::sharedState();
-    auto keys = toolbox ? toolbox->allKeys() : nullptr;
-    std::unordered_set<int> seenIds;
-    if (keys) {
-        for (int i = 0; i < keys->count() && m_allowedObjectIds.size() < 80; ++i) {
-            auto key = static_cast<CCString*>(keys->objectAtIndex(i));
-            if (!key) continue;
-            const int objectId = std::atoi(key->getCString());
-            if (objectId <= 0 || !seenIds.insert(objectId).second) continue;
-            const char* frame = toolbox->intKeyToFrame(objectId);
-            if (!frame || !*frame) continue;
+    if (toolbox) {
+        candidates.reserve(toolbox->m_allKeys.size());
+        for (auto const& [objectId, frameName] : toolbox->m_allKeys) {
+            if (objectId <= 0 || frameName.empty()) continue;
             auto prototype = GameObject::createWithKey(objectId);
-            if (!prototype || prototype->getType() != GameObjectType::Decoration) continue;
-            m_allowedObjectIds.push_back(objectId);
-            catalogue << objectId << ":" << frame << "; ";
+            if (!prototype || prototype->m_objectType != GameObjectType::Decoration) continue;
+            candidates.push_back({objectId, frameName.c_str()});
         }
     }
+
+    // Keep a deterministic, evenly-spread sample so newer IDs are represented
+    // without sending an enormous catalogue in every AI request.
+    std::ostringstream catalogue;
+    const std::size_t selectedCount = std::min(maxCatalogueEntries, candidates.size());
+    for (std::size_t i = 0; i < selectedCount; ++i) {
+        const std::size_t index = selectedCount == candidates.size()
+            ? i
+            : (selectedCount == 1 ? 0 : i * (candidates.size() - 1) / (selectedCount - 1));
+        const auto& entry = candidates[index];
+        m_allowedObjectIds.push_back(entry.objectId);
+        catalogue << entry.objectId << ":" << entry.frame << "; ";
+    }
+
     if (m_allowedObjectIds.empty()) {
         FLAlertLayer::create("Decoration Catalogue Unavailable",
-            "Could not find safe decorative objects in the Geometry Dash object toolbox.",
+            "The game did not expose any usable decorative objects. Check that the editor assets finished loading, then try again.",
             "OK")->show();
         return;
     }
@@ -334,76 +347,36 @@ void AIDecorateLayer::onGenerate(CCObject*) {
 
 void AIDecorateLayer::onApply(CCObject*) {
     if (!m_hasValidPlan || !m_editorUI || m_lastPlan.placements.empty()) {
-        FLAlertLayer::create("No Valid Plan", "Generate and review a valid AI plan first.", "OK")->show();
+        FLAlertLayer::create("Nothing to Apply", "Generate and review a valid decoration plan first.", "OK")->show();
         return;
     }
 
-    std::string serialized;
-    std::size_t accepted = 0;
+    std::string serializedObjects;
     for (const auto& placement : m_lastPlan.placements) {
-        if (std::find(m_allowedObjectIds.begin(), m_allowedObjectIds.end(), placement.objectId) ==
-            m_allowedObjectIds.end()) continue;
-
-        auto object = GameObject::createWithKey(placement.objectId);
-        if (!object || object->getType() != GameObjectType::Decoration) continue;
-
         const float x = m_areaMin.x + placement.x * (m_areaMax.x - m_areaMin.x);
         const float y = m_areaMin.y + placement.y * (m_areaMax.y - m_areaMin.y);
+        auto object = GameObject::createWithKey(placement.objectId);
+        if (!object) continue;
         object->setPosition(CCPoint(x, y));
-        object->setScale(std::clamp(placement.scale, 0.25f, 3.0f));
-        object->setRotation(std::clamp(placement.rotation, -360.0f, 360.0f));
-
-        const auto rgb = static_cast<unsigned long>(std::stoul(placement.color.substr(1), nullptr, 16));
-        object->setObjectColor(ccColor3B{
-            static_cast<GLubyte>((rgb >> 16) & 0xFF),
-            static_cast<GLubyte>((rgb >> 8) & 0xFF),
-            static_cast<GLubyte>(rgb & 0xFF)
-        });
-
-        const auto saveString = object->getSaveString(m_editorUI->m_editorLayer);
-        serialized += saveString.c_str();
-        serialized += ";";
-        ++accepted;
+        object->setScale(placement.scale);
+        object->setRotation(placement.rotation);
+        object->m_baseColor = ccColor3B(
+            static_cast<GLubyte>(placement.color.r),
+            static_cast<GLubyte>(placement.color.g),
+            static_cast<GLubyte>(placement.color.b)
+        );
+        serializedObjects += object->getSaveString(m_editorUI->getGameLayer());
+        serializedObjects += ";";
     }
 
-    if (accepted == 0 || serialized.empty()) {
-        FLAlertLayer::create("Apply Failed", "No valid decorative objects could be created from this plan.", "OK")->show();
+    if (serializedObjects.empty()) {
+        FLAlertLayer::create("Apply Failed", "The generated plan did not contain any usable objects.", "OK")->show();
         return;
     }
 
-    // Use Geometry Dash's native paste path so the operation is grouped as a normal editor action.
-    auto pasted = m_editorUI->pasteObjects(gd::string(serialized.c_str()), true, false);
-    if (!pasted || pasted->count() == 0) {
-        FLAlertLayer::create("Apply Failed", "The editor could not paste the generated decoration.", "OK")->show();
-        return;
-    }
-
-    m_editorUI->updateButtons();
-    m_editorUI->updateObjectInfoLabel();
+    m_editorUI->pasteObjects(serializedObjects, true, false);
     m_hasValidPlan = false;
-    if (m_applyButton) m_applyButton->setEnabled(false);
-    setStatus("Decoration applied - use Undo to revert");
-    FLAlertLayer::create("Decoration Applied",
-        "Added " + std::to_string(pasted->count()) +
-        " decorative objects. Use the editor's Undo command to revert the batch.",
-        "Great")->show();
+    m_applyButton->setEnabled(false);
+    setStatus("Decoration pasted into editor");
+    FLAlertLayer::create("Decoration Applied", "The generated decoration was pasted into the level. Use Undo if anything looks wrong.", "OK")->show();
 }
-
-void AIDecorateLayer::setStatus(const std::string& status) {
-    if (m_statusLabel) m_statusLabel->setString(status.c_str());
-}
-
-std::vector<geode::Ref<GameObject>> AIDecorateLayer::getSelectedObjects() {
-    std::vector<geode::Ref<GameObject>> objects;
-    if (!m_editorUI) return objects;
-
-    auto selected = m_editorUI->getSelectedObjects();
-    if (!selected) return objects;
-
-    for (auto object : geode::cocos::CCArrayExt<GameObject, false>(selected)) {
-        if (object) objects.emplace_back(object);
-    }
-    return objects;
-}
-
-} // namespace AutoDecoratorAI
