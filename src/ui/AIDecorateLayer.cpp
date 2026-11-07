@@ -2,6 +2,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
 #include <algorithm>
+#include <utility>
 
 using namespace geode::prelude;
 
@@ -133,13 +134,15 @@ void AIDecorateLayer::hideOverlay() {
 }
 
 void AIDecorateLayer::onSetPrompt(CCObject*) {
-    auto input = TextInput::create("Describe the decoration style...", "AI Decoration Prompt");
+    auto input = TextInput::create("AI Decoration Prompt", "Describe the decoration style...");
     input->setCallback([this](const std::string& value) {
         auto cleaned = value;
         if (cleaned.size() > 1500) cleaned.resize(1500);
         m_prompt = cleaned;
         if (m_promptLabel) {
-            m_promptLabel->setString(m_prompt.empty() ? "No prompt set" : m_prompt.c_str());
+            std::string preview = m_prompt;
+            if (preview.size() > 52) preview = preview.substr(0, 49) + "...";
+            m_promptLabel->setString(m_prompt.empty() ? "No prompt set" : preview.c_str());
         }
         setStatus(m_prompt.empty() ? "Enter a prompt to begin" : "Prompt saved");
     });
