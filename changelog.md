@@ -7,6 +7,8 @@
 - Replaced legacy built-in preset IDs that included portals, placeholder IDs, or gameplay-like objects.
 - Added the Modern Redline preset as the first built-in preset, with no glow entries.
 - Removed invalid weighted-selection fallbacks that could silently insert unrelated objects.
+- Enforced the decorative allow-list again at the final object-insertion boundary.
+- Made preset ordering deterministic and placed Modern Redline first.
 - Added the Alt3rDECO 2.0 release plan covering 15 workstreams.
 
 ### Release blockers
