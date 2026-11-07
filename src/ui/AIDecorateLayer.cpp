@@ -12,6 +12,40 @@
 using namespace geode::prelude;
 
 namespace AutoDecoratorAI {
+namespace {
+
+bool isLoopbackHttpEndpoint(const std::string& endpoint) {
+    constexpr std::string_view prefix = "http://";
+    if (endpoint.rfind(prefix, 0) != 0) return false;
+
+    const auto authorityStart = prefix.size();
+    const auto authorityEnd = endpoint.find_first_of("/?#", authorityStart);
+    const auto authority = endpoint.substr(
+        authorityStart,
+        authorityEnd == std::string::npos ? std::string::npos : authorityEnd - authorityStart
+    );
+    if (authority.empty() || authority.find('@') != std::string::npos ||
+        authority.find('\\\\') != std::string::npos) return false;
+
+    std::string host;
+    if (authority.front() == '[') {
+        const auto close = authority.find(']');
+        if (close == std::string::npos) return false;
+        host = authority.substr(1, close - 1);
+        if (close + 1 < authority.size() && authority[close + 1] != ':') return false;
+    }
+    else {
+        const auto colon = authority.find(':');
+        host = authority.substr(0, colon);
+    }
+
+    std::transform(host.begin(), host.end(), host.begin(),
+        [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
+    return host == "localhost" || host == "127.0.0.1" || host == "::1";
+}
+
+} // namespace
+
 
 AIDecorateLayer* AIDecorateLayer::create(EditorUI* editorUI) {
     auto ret = new AIDecorateLayer();
@@ -230,15 +264,7 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         auto model = mod->getSettingValue<std::string>(modelKey);
         auto apiKey = mod->getSettingValue<std::string>(keyKey);
         const bool secureEndpoint = endpoint.rfind("https://", 0) == 0;
-        const bool localEndpoint =
-            endpoint == "http://localhost" ||
-            endpoint.rfind("http://localhost:", 0) == 0 ||
-            endpoint.rfind("http://localhost/", 0) == 0 ||
-            endpoint == "http://127.0.0.1" ||
-            endpoint.rfind("http://127.0.0.1:", 0) == 0 ||
-            endpoint.rfind("http://127.0.0.1/", 0) == 0 ||
-            endpoint.rfind("http://[::1]:", 0) == 0 ||
-            endpoint.rfind("http://[::1]/", 0) == 0;
+        const bool localEndpoint = isLoopbackHttpEndpoint(endpoint);
         if (!endpoint.empty() && !model.empty() && !apiKey.empty() &&
             (secureEndpoint || localEndpoint)) {
             providers.push_back(AI::ProviderConfig{id, name, endpoint, model, apiKey, true});
