@@ -61,7 +61,7 @@ void AIDecorateLayer::createToolbarButton() {
     auto winSize = CCDirector::sharedDirector()->getWinSize();
     
     // Create toggle button
-    auto buttonSprite = ButtonSprite::create("Auto Decorate AI");
+    auto buttonSprite = ButtonSprite::create("Alt3rDECO");
     auto button = CCMenuItemSpriteExtra::create(
         buttonSprite,
         this,
@@ -99,7 +99,7 @@ void AIDecorateLayer::createPresetSelector() {
     auto panelSize = m_overlayPanel->getContentSize();
     
     // Preset label
-    auto presetLabel = CCLabelBMFont::create("AI Preset:", "bigFont.fnt");
+    auto presetLabel = CCLabelBMFont::create("Preset:", "bigFont.fnt");
     presetLabel->setPosition(CCSize(panelSize.width / 2, panelSize.height - 40));
     presetLabel->setScale(0.6f);
     m_overlayPanel->addChild(presetLabel);
