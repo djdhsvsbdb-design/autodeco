@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <cstdlib>
 
 using namespace geode::prelude;
 
@@ -384,9 +385,10 @@ void AIDecorationEngine::applyFlowFollowing(
 ) {
     if (!preset.flowFollowing) return;
     
-    // Adjust positions slightly along flow direction
+    // Adjust positions slightly along flow direction using the engine RNG.
+    std::uniform_real_distribution<float> offsetDist(5.0f, 14.0f);
     for (auto& placement : placements) {
-        float offset = 5.0f + (std::rand() % 10);
+        float offset = offsetDist(m_randomGenerator);
         placement.position.x += patterns.flowDirection.x * offset;
         placement.position.y += patterns.flowDirection.y * offset;
     }
@@ -488,12 +490,11 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
         return;
     }
     
-    // Batch object creation to prevent frame freezing
-    const int batchSize = 10;
-    for (size_t i = 0; i < placements.size(); i += batchSize) {
-        size_t end = std::min(i + batchSize, placements.size());
-        
-        for (size_t j = i; j < end; ++j) {
+    // Bound one apply operation so a malformed preset cannot create an
+    // unreasonably large number of editor objects in a single action.
+    const size_t safePlacementLimit = 1500;
+    const size_t placementCount = std::min(placements.size(), safePlacementLimit);
+    for (size_t j = 0; j < placementCount; ++j) {
             const auto& placement = placements[j];
             
             // Create the object
@@ -506,10 +507,6 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
                 // Add to level
                 editorLayer->addToObjects(obj);
             }
-        }
-        
-        // Small delay between batches
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     
     // Refresh editor
