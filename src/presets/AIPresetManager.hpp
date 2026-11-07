@@ -35,7 +35,7 @@ private:
     std::unordered_map<std::string, AIPreset> m_presets;
     std::string m_presetDirectory;
     
-    AIPreset createAdaptiveNeonPreset();
+    AIPreset createModernRedlinePreset();
     AIPreset createMinimalStructuralPreset();
     AIPreset createHighDetailDemonPreset();
     AIPreset createCleanArchitecturalPreset();
