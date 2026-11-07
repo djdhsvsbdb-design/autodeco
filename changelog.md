@@ -8,6 +8,7 @@
 - Fixed duplicate overlay-hide method definition.
 - Made zero and low decoration density behave correctly.
 - Added a per-apply placement limit.
+- Removed the hard-coded fallback object ID: incomplete presets now fall back only to valid entries in their own pool, and empty/invalid pools are skipped instead of silently inserting an unrelated object.
 - Improved preset file loading and restricted preset IDs to safe filename characters.
 - Kept the existing mod ID to preserve mod identity and saved data.
 
