@@ -2,6 +2,7 @@
 
 #include <Geode/Geode.hpp>
 #include "../ai/AIService.hpp"
+#include "../ai/DecorationPlan.hpp"
 #include <string>
 #include <vector>
 
@@ -36,6 +37,8 @@ private:
     std::string m_prompt;
     bool m_isVisible = false;
     bool m_isGenerating = false;
+    bool m_hasValidPlan = false;
+    AI::DecorationPlan m_lastPlan;
 };
 
 } // namespace AutoDecoratorAI
