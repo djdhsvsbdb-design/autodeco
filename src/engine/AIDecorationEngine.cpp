@@ -528,16 +528,14 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
 
         // EditorUI::createObject is the supported editor creation path.
         // It registers the object with the editor's object/undo bookkeeping.
-        auto obj = editorUI->createObject(placement.objectID);
+        auto obj = editorUI->createObject(placement.objectID, placement.position);
         if (obj) {
-            obj->setPosition(placement.position);
             obj->setRotation(placement.rotation);
             obj->setScale(placement.scale);
         }
     }
     
-    // Refresh the editor's object layer after adding the new objects.
-    editorLayer->updateObjects();
+    // EditorUI::createObject performs the editor's insertion bookkeeping.
 }
 
 }
