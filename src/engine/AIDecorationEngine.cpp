@@ -495,18 +495,18 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
     const size_t safePlacementLimit = 1500;
     const size_t placementCount = std::min(placements.size(), safePlacementLimit);
     for (size_t j = 0; j < placementCount; ++j) {
-            const auto& placement = placements[j];
-            
-            // Create the object
-            auto obj = GameObject::create(placement.objectID);
-            if (obj) {
-                obj->setPosition(placement.position);
-                obj->setRotation(placement.rotation);
-                obj->setScale(placement.scale);
-                
-                // Add to level
-                editorLayer->addToObjects(obj);
-            }
+        const auto& placement = placements[j];
+
+        // Create the object
+        auto obj = GameObject::create(placement.objectID);
+        if (obj) {
+            obj->setPosition(placement.position);
+            obj->setRotation(placement.rotation);
+            obj->setScale(placement.scale);
+
+            // Add to level
+            editorLayer->addToObjects(obj);
+        }
     }
     
     // Refresh editor
