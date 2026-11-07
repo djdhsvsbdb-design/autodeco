@@ -1,5 +1,5 @@
-# Windows-only CI for the current development branch.
-name: Build Alt3rDECO (Windows)
+# Android 64-bit CI for Alt3rDECO.
+name: Build Alt3rDECO (Android 64-bit)
 on:
   push:
     branches:
@@ -10,9 +10,9 @@ on:
 permissions:
   contents: read
 jobs:
-  build-win64:
-    name: Build Geode mod for Windows x64
-    runs-on: windows-latest
+  build-android64:
+    name: Build Geode mod for Android 64-bit
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -21,12 +21,12 @@ jobs:
         uses: geode-sdk/build-geode-mod@main
         with:
           sdk: given
-          target: Win64
+          target: Android64
           build-config: Release
       - name: Upload .geode artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Alt3rDECO-2.0.0-Windows
+          name: Alt3rDECO-2.0.0-Android64
           path: ${{ steps.build.outputs.build-output }}/*.geode
           if-no-files-found: error
           retention-days: 14
