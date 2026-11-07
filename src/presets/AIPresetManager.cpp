@@ -1,10 +1,23 @@
 #include "AIPresetManager.hpp"
 #include <Geode/Geode.hpp>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
+#include <cctype>
 
 using namespace geode::preload;
 
 namespace AutoDecoratorAI {
+
+namespace {
+bool isSafePresetId(const std::string& id) {
+    if (id.empty() || id.size() > 80) return false;
+    for (unsigned char ch : id) {
+        if (!std::isalnum(ch) && ch != '_' && ch != '-') return false;
+    }
+    return true;
+}
+}
 
 AIPresetManager* AIPresetManager::s_instance = nullptr;
 
@@ -93,9 +106,9 @@ void AIPresetManager::removePreset(const std::string& id) {
     auto it = m_presets.find(id);
     if (it != m_presets.end()) {
         // Delete file if it's a custom preset
-        if (id.find("builtin_") == std::string::npos) {
-            std::string filePath = getPresetFilePath(id);
-            if (std::filesystem::exists(filePath)) {
+        if (id.find("builtin_") == std::string::npos && isSafePresetId(id)) {
+            const auto filePath = getPresetFilePath(id);
+            if (!filePath.empty() && std::filesystem::exists(filePath)) {
                 std::filesystem::remove(filePath);
             }
         }
@@ -306,13 +319,26 @@ AIPreset AIPresetManager::createRetroGridSymmetryPreset() {
 }
 
 std::string AIPresetManager::getPresetFilePath(const std::string& presetId) {
+    if (!isSafePresetId(presetId)) {
+        return {};
+    }
     return (std::filesystem::path(m_presetDirectory) / (presetId + ".json")).string();
 }
 
 bool AIPresetManager::loadPresetFromFile(const std::string& filePath) {
     try {
-        auto json = matjson::parse(std::filesystem::path(filePath).string());
+        std::ifstream file(filePath);
+        if (!file) {
+            return false;
+        }
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        auto json = matjson::parse(buffer.str());
         AIPreset preset = AIPreset::fromJson(json);
+        if (!isSafePresetId(preset.id)) {
+            log::warn("Rejected preset with unsafe id from {}", filePath);
+            return false;
+        }
         addPreset(preset);
         return true;
     } catch (const std::exception& e) {
@@ -324,6 +350,10 @@ bool AIPresetManager::loadPresetFromFile(const std::string& filePath) {
 bool AIPresetManager::savePresetToFile(const AIPreset& preset) {
     try {
         std::string filePath = getPresetFilePath(preset.id);
+        if (filePath.empty()) {
+            log::warn("Rejected preset with unsafe id: {}", preset.id);
+            return false;
+        }
         auto json = preset.toJson();
         std::ofstream file(filePath);
         file << json.dump(4);
