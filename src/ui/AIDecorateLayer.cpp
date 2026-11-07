@@ -215,14 +215,14 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         for (int i = 0; i < keys->count() && m_allowedObjectIds.size() < 80; ++i) {
             auto key = static_cast<CCString*>(keys->objectAtIndex(i));
             if (!key) continue;
-            auto idValue = static_cast<CCString*>(toolbox->m_pkeyToFrame->valueForKey(key->getCString()));
-            if (!idValue) continue;
-            const int objectId = std::atoi(idValue->getCString());
+            const int objectId = std::atoi(key->getCString());
             if (objectId <= 0 || !seenIds.insert(objectId).second) continue;
+            const char* frame = toolbox->intKeyToFrame(objectId);
+            if (!frame || !*frame) continue;
             auto prototype = GameObject::createWithKey(objectId);
             if (!prototype || prototype->getType() != GameObjectType::Decoration) continue;
             m_allowedObjectIds.push_back(objectId);
-            catalogue << objectId << ":" << key->getCString() << "; ";
+            catalogue << objectId << ":" << frame << "; ";
         }
     }
     if (m_allowedObjectIds.empty()) {
