@@ -40,7 +40,7 @@ void AIService::sendCurrentRequest() {
     matjson::Value body;
     body["model"] = provider.model;
     body["temperature"] = 0.25;
-    body["max_tokens"] = 1800;
+    body["max_tokens"] = 3500;
     body["messages"] = matjson::Value::array();
 
     matjson::Value systemMessage;
