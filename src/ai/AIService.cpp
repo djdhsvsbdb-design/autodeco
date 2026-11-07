@@ -69,7 +69,7 @@ void AIService::sendCurrentRequest() {
     body["messages"].push_back(systemMessage);
     body["messages"].push_back(userMessage);
 
-    web::WebRequest request;
+    geode::utils::web::WebRequest request;
     request.header("Content-Type", "application/json");
     request.header("Authorization", "Bearer " + provider.apiKey);
     request.bodyJSON(body);
@@ -77,7 +77,7 @@ void AIService::sendCurrentRequest() {
 
     m_requestTask.spawn(
         request.post(provider.endpoint),
-        [this](web::WebResponse response) {
+        [this](geode::utils::web::WebResponse response) {
             this->handleResponse(std::move(response));
         }
     );
