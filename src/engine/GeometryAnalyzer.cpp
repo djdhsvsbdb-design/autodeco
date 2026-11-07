@@ -2,6 +2,7 @@
 #include <Geode/Geode.hpp>
 #include <algorithm>
 #include <cmath>
+#include <cfloat>
 
 using namespace geode::prelude;
 
