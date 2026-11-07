@@ -1,32 +1,24 @@
-cmake_minimum_required(VERSION 3.15)
-project(AutoDecoratorAI)
+cmake_minimum_required(VERSION 3.21)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-set(SOURCES
-    src/ModMain.cpp
-    src/ui/AIDecorateLayer.cpp
-    src/ai/ProviderRouter.cpp
-    src/ai/AIService.cpp
-    src/ai/DecorationPlan.cpp
+project(AutoDecoratorAI VERSION 3.0.0)
+
+# Collect the complete mod source tree, including the AI plan validator.
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+    src/*.cpp
 )
 
-set(HEADERS
-    src/ui/AIDecorateLayer.hpp
-    src/ai/ProviderRouter.hpp
-    src/ai/AIService.hpp
-    src/ai/DecorationPlan.hpp
-)
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+if (NOT DEFINED ENV{GEODE_SDK})
+    message(FATAL_ERROR "Unable to find Geode SDK. Set GEODE_SDK to your Geode SDK directory.")
+endif()
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+message(STATUS "Found Geode SDK: $ENV{GEODE_SDK}")
+add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "AutoDecoratorAI"
-    PREFIX ""
-    SUFFIX ".dll"
-)
+# Packages the mod, links Geode, and includes mod.json/resources.
+setup_geode_mod(${PROJECT_NAME})
