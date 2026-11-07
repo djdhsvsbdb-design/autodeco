@@ -4,6 +4,7 @@
 #include <Geode/utils/async.hpp>
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace AutoDecoratorAI::AI {
 
@@ -22,7 +23,7 @@ private:
     void handleResponse(geode::utils::web::WebResponse response);
 
     ProviderRouter m_router;
-    async::TaskHolder<web::WebResponse> m_requestTask;
+    geode::async::TaskHolder<geode::utils::web::WebResponse> m_requestTask;
     std::string m_userPrompt;
     std::vector<int> m_allowedObjectIds;
     Completion m_completion;
