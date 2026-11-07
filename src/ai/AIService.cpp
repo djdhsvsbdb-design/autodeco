@@ -83,7 +83,7 @@ void AIService::sendCurrentRequest() {
     );
 }
 
-void AIService::handleResponse(web::WebResponse response) {
+void AIService::handleResponse(geode::utils::web::WebResponse response) {
     const int status = response.code();
     const std::string responseBody = response.string().unwrapOr("");
 
