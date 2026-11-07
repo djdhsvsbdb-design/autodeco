@@ -14,6 +14,7 @@ set(SOURCES
     src/presets/AIPresetManager.cpp
     src/presets/AIPresetData.cpp
     src/ai/ProviderRouter.cpp
+    src/ai/AIService.cpp
 )
 
 # Header files
@@ -25,6 +26,7 @@ set(HEADERS
     src/presets/AIPresetManager.hpp
     src/presets/AIPresetData.hpp
     src/ai/ProviderRouter.hpp
+    src/ai/AIService.hpp
 )
 
 # Create shared library (DLL)
