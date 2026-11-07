@@ -61,8 +61,8 @@ void AIService::sendCurrentRequest() {
         "The selected-area dimensions, verified decorative object catalogue, and user's visual brief are included below. "
         "Avoid covering gameplay-critical paths. User brief: " + m_userPrompt;
 
-    body["messages"].push_back(systemMessage);
-    body["messages"].push_back(userMessage);
+    body["messages"].push(systemMessage);
+    body["messages"].push(userMessage);
 
     geode::utils::web::WebRequest request;
     request.header("Content-Type", "application/json");
