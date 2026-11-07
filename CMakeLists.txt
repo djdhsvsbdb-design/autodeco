@@ -9,12 +9,14 @@ set(SOURCES
     src/ui/AIDecorateLayer.cpp
     src/ai/ProviderRouter.cpp
     src/ai/AIService.cpp
+    src/ai/DecorationPlan.cpp
 )
 
 set(HEADERS
     src/ui/AIDecorateLayer.hpp
     src/ai/ProviderRouter.hpp
     src/ai/AIService.hpp
+    src/ai/DecorationPlan.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
