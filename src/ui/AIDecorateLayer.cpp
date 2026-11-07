@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <limits>
 #include <sstream>
 #include <unordered_set>
 #include <utility>
@@ -367,9 +368,13 @@ void AIDecorateLayer::setStatus(const std::string& status) {
 std::vector<geode::Ref<GameObject>> AIDecorateLayer::getSelectedObjects() {
     std::vector<geode::Ref<GameObject>> objects;
     if (!m_editorUI) return objects;
-    auto editorLayer = m_editorUI->getEditorLayer();
-    if (!editorLayer) return objects;
-    for (auto object : editorLayer->getSelectedObjects()) objects.push_back(object);
+
+    auto selected = m_editorUI->getSelectedObjects();
+    if (!selected) return objects;
+
+    for (auto object : geode::cocos::CCArrayExt<GameObject, false>(selected)) {
+        if (object) objects.emplace_back(object);
+    }
     return objects;
 }
 
