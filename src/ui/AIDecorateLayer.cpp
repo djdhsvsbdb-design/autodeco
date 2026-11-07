@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "AIDecorateLayer.hpp"
 #include "../presets/AIPresetManager.hpp"
 #include <Geode/Geode.hpp>
