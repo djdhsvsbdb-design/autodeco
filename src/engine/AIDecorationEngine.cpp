@@ -520,6 +520,11 @@ void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPla
     for (size_t j = 0; j < placementCount; ++j) {
         const auto& placement = placements[j];
 
+        // Defense in depth: never instantiate anything outside the decorative allow-list.
+        if (!isAllowedDecorationObjectID(placement.objectID)) {
+            continue;
+        }
+
         // Create the object
         auto obj = GameObject::create(placement.objectID);
         if (obj) {
