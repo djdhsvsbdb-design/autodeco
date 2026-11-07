@@ -358,14 +358,6 @@ void AIDecorateLayer::showOverlay() {
 }
 
 void AIDecorateLayer::hideOverlay() {
-    m_overlayPanel->runAction(CCSequence::create(
-        CCFadeOut::create(0.2f),
-        CCCallFunc::create(this, callfunc_selector(AIDecorateLayer::hideOverlay)),
-        nullptr
-    ));
-}
-
-void AIDecorateLayer::hideOverlay() {
     m_overlayPanel->setVisible(false);
 }
 
