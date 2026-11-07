@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <unordered_map>
