@@ -5,7 +5,7 @@ A Geode mod that turns a natural-language decoration brief into a structured AI 
 ## 3.0 work in progress
 
 - Prompt-first editor interface; the old preset-driven Auto Deco generator is removed.
-- Primary and backup OpenAI-compatible providers with automatic failover for rate limits, quota exhaustion, network errors, unavailable models, and server errors.
+- Primary, backup, and fallback OpenAI-compatible providers with automatic failover for rate limits, quota exhaustion, network errors, unavailable models, and server errors.
 - Normalizes standard chat-completions responses and direct JSON-plan responses.
 - Validates AI output before preview: required fields, array types, string lengths, layer counts, palette limits, and response-size limits.
 - Shows a readable preview of style, mood, palette, decoration layers, placement guidance, and notes.
@@ -17,7 +17,7 @@ The 3.0 branch does not yet apply generated decoration objects to the level. The
 
 ## Provider setup
 
-In the mod's Geode settings, configure endpoint, model, and API key for the primary provider. Configure the backup provider to enable failover. Endpoints must be OpenAI-compatible chat-completions URLs. Use HTTPS endpoints; keep keys private.
+In the mod's Geode settings, configure endpoint, model, and API key for the primary provider. Configure the backup and fallback providers to enable multi-step failover. Only HTTPS endpoints are accepted, except localhost for local development. Endpoints must be OpenAI-compatible chat-completions URLs. Use HTTPS endpoints; keep keys private.
 
 ## Build
 
