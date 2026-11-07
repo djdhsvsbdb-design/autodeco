@@ -99,7 +99,8 @@ SymmetryType PatternDetector::detectSymmetry(const std::vector<Ref<GameObject>>&
     }
     avgAngleDiff /= (angles.size() - 1);
     
-    float expectedDiff = (2 * M_PI) / objects.size();
+    constexpr float twoPi = 6.28318530718f;
+    float expectedDiff = twoPi / static_cast<float>(objects.size());
     if (std::abs(avgAngleDiff - expectedDiff) < 0.3f) {
         return SymmetryType::Radial;
     }
