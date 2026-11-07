@@ -6,12 +6,6 @@
   "developer": "Reid",
   "description": "AI-powered Geometry Dash decoration planning with validated plans and automatic multi-provider failover.",
   "repository": "https://github.com/djdhsvsbdb-design/autodeco",
-  "dependencies": [
-    {
-      "id": "geode",
-      "version": ">=5.0.0"
-    }
-  ],
   "settings": {
     "provider-1-endpoint": {
       "type": "string",
@@ -64,5 +58,11 @@
       "name": "Fallback AI API key",
       "description": "Stored in local Geode mod settings; never share it."
     }
+  },
+  "gd": {
+    "win": "2.2081",
+    "mac": "2.2081",
+    "android": "2.2081",
+    "ios": "2.2081"
   }
 }
