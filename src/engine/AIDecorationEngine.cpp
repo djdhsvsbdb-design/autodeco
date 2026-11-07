@@ -500,7 +500,7 @@ DecorationObject AIDecorationEngine::selectWeightedObject(const std::vector<Deco
         }
     }
     
-    return pool.back();
+    return DecorationObject{0, 0.0f, category, false, false};
 }
 
 void AIDecorationEngine::applyDecorationsToLevel(const std::vector<DecorationPlacement>& placements, EditorUI* editorUI) {
