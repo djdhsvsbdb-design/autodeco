@@ -1,5 +1,6 @@
 #include "AIPresetData.hpp"
 #include <Geode/Geode.hpp>
+#include <cmath>
 
 using namespace geode::prelude;
 
@@ -116,15 +117,12 @@ AIPreset AIPreset::fromJson(const matjson::Value& json) {
     if (json.contains("styleWeights")) {
         const auto& weights = json["styleWeights"];
         if (weights.isObject()) {
-            for (const auto& entry : weights) {
-                auto key = entry.getKey();
-                if (key) {
-                    const float value = static_cast<float>(
-                        entry.asDouble().unwrapOr(0.0)
-                    );
-                    if (std::isfinite(value) && value >= 0.0f) {
-                        preset.styleWeights[*key] = value;
-                    }
+            for (const auto& [key, valueJson] : weights) {
+                const float value = static_cast<float>(
+                    valueJson.asDouble().unwrapOr(0.0)
+                );
+                if (std::isfinite(value) && value >= 0.0f) {
+                    preset.styleWeights[key] = value;
                 }
             }
         }
