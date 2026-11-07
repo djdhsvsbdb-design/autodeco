@@ -191,7 +191,8 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateEdgeDecorations(
     float chaosScale
 ) {
     std::vector<DecorationPlacement> placements;
-    
+    std::uniform_real_distribution<float> scaleVariation(-0.08f, 0.08f);
+
     for (const auto& zone : zones) {
         if (zone.zoneType != "edge" || zone.decorationDensity <= 0.0f) continue;
         
@@ -204,7 +205,9 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateEdgeDecorations(
             placement.position = generatePositionInZone(zone, cluster, chaosScale);
             placement.objectID = selectDecorationObject(preset, "edge", chaosScale).objectID;
             placement.rotation = calculateImperfection(chaosScale * 0.2f);
-            placement.scale = 1.0f + calculateImperfection(chaosScale * 0.1f);
+            placement.scale = std::clamp(
+                1.0f + scaleVariation(m_randomGenerator) * chaosScale, 0.75f, 1.25f
+            );
             placements.push_back(placement);
         }
     }
@@ -220,7 +223,8 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateFillDecorations(
     float detailScale
 ) {
     std::vector<DecorationPlacement> placements;
-    
+    std::uniform_real_distribution<float> scaleVariation(-0.08f, 0.08f);
+
     for (const auto& zone : zones) {
         if (zone.zoneType != "fill" || zone.decorationDensity <= 0.0f) continue;
         
@@ -233,7 +237,9 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateFillDecorations(
             placement.position = generatePositionInZone(zone, cluster, chaosScale);
             placement.objectID = selectDecorationObject(preset, "fill", chaosScale).objectID;
             placement.rotation = calculateImperfection(chaosScale * 0.3f);
-            placement.scale = 0.8f + calculateImperfection(chaosScale * 0.15f);
+            placement.scale = std::clamp(
+                0.8f + scaleVariation(m_randomGenerator) * chaosScale, 0.65f, 0.95f
+            );
             placements.push_back(placement);
         }
     }
@@ -285,7 +291,8 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateMicroDetails(
     float chaosScale
 ) {
     std::vector<DecorationPlacement> placements;
-    
+    std::uniform_real_distribution<float> scaleVariation(-0.05f, 0.05f);
+
     for (const auto& zone : zones) {
         if (zone.zoneType != "edge" && zone.zoneType != "corner") continue;
         
@@ -298,7 +305,9 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateMicroDetails(
             placement.position = generatePositionInZone(zone, cluster, chaosScale);
             placement.objectID = selectDecorationObject(preset, "detail", chaosScale).objectID;
             placement.rotation = calculateImperfection(chaosScale * 0.5f);
-            placement.scale = 0.5f + calculateImperfection(chaosScale * 0.2f);
+            placement.scale = std::clamp(
+                0.5f + scaleVariation(m_randomGenerator) * chaosScale, 0.4f, 0.6f
+            );
             placements.push_back(placement);
         }
     }
