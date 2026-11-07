@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <limits>
 #include <sstream>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -25,7 +26,7 @@ bool isLoopbackHttpEndpoint(const std::string& endpoint) {
         authorityEnd == std::string::npos ? std::string::npos : authorityEnd - authorityStart
     );
     if (authority.empty() || authority.find('@') != std::string::npos ||
-        authority.find('\\\\') != std::string::npos) return false;
+        authority.find('\\') != std::string::npos) return false;
 
     std::string host;
     if (authority.front() == '[') {
