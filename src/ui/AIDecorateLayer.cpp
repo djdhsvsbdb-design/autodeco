@@ -1,6 +1,7 @@
 #include "AIDecorateLayer.hpp"
 #include "../presets/AIPresetManager.hpp"
 #include <Geode/Geode.hpp>
+#include <algorithm>
 
 using namespace geode::preload;
 
@@ -100,7 +101,7 @@ void AIDecorateLayer::createPresetSelector() {
     
     // Preset label
     auto presetLabel = CCLabelBMFont::create("AI Preset:", "bigFont.fnt");
-    presetLabel->setPosition(CCSize(panelSize.width / 2, panelSize.height - 40));
+    presetLabel->setPosition(panelSize.width / 2, panelSize.height - 40);
     presetLabel->setScale(0.6f);
     m_overlayPanel->addChild(presetLabel);
     
@@ -109,13 +110,13 @@ void AIDecorateLayer::createPresetSelector() {
         m_currentPreset ? m_currentPreset->name.c_str() : "None",
         "goldFont.fnt"
     );
-    m_presetLabel->setPosition(CCSize(panelSize.width / 2, panelSize.height - 70));
+    m_presetLabel->setPosition(panelSize.width / 2, panelSize.height - 70);
     m_presetLabel->setScale(0.5f);
     m_overlayPanel->addChild(m_presetLabel);
     
     // Preset selector menu
     m_presetMenu = CCMenu::create();
-    m_presetMenu->setPosition(CCSize(panelSize.width / 2, panelSize.height - 100));
+    m_presetMenu->setPosition(panelSize.width / 2, panelSize.height - 100);
     m_overlayPanel->addChild(m_presetMenu);
     
     updatePresetDropdown();
@@ -148,45 +149,45 @@ void AIDecorateLayer::createSliders() {
     
     // Density slider
     auto densityLabel = CCLabelBMFont::create("Density:", "bigFont.fnt");
-    densityLabel->setPosition(CCSize(80, startY));
+    densityLabel->setPosition(80, startY);
     densityLabel->setScale(0.4f);
     m_overlayPanel->addChild(densityLabel);
     
     m_densitySlider = Slider::create(this, menu_selector(AIDecorateLayer::onDensityChanged), 0.5f);
-    m_densitySlider->setPosition(CCSize(panelSize.width / 2 + 50, startY));
+    m_densitySlider->setPosition(panelSize.width / 2 + 50, startY);
     m_densitySlider->setScale(0.8f);
     m_mainMenu->addChild(m_densitySlider);
     
     // Chaos slider
     auto chaosLabel = CCLabelBMFont::create("Chaos:", "bigFont.fnt");
-    chaosLabel->setPosition(CCSize(80, startY - 40));
+    chaosLabel->setPosition(80, startY - 40);
     chaosLabel->setScale(0.4f);
     m_overlayPanel->addChild(chaosLabel);
     
     m_chaosSlider = Slider::create(this, menu_selector(AIDecorateLayer::onChaosChanged), 0.3f);
-    m_chaosSlider->setPosition(CCSize(panelSize.width / 2 + 50, startY - 40));
+    m_chaosSlider->setPosition(panelSize.width / 2 + 50, startY - 40);
     m_chaosSlider->setScale(0.8f);
     m_mainMenu->addChild(m_chaosSlider);
     
     // Symmetry slider
     auto symmetryLabel = CCLabelBMFont::create("Symmetry:", "bigFont.fnt");
-    symmetryLabel->setPosition(CCSize(80, startY - 80));
+    symmetryLabel->setPosition(80, startY - 80);
     symmetryLabel->setScale(0.4f);
     m_overlayPanel->addChild(symmetryLabel);
     
     m_symmetrySlider = Slider::create(this, menu_selector(AIDecorateLayer::onSymmetryChanged), 0.7f);
-    m_symmetrySlider->setPosition(CCSize(panelSize.width / 2 + 50, startY - 80));
+    m_symmetrySlider->setPosition(panelSize.width / 2 + 50, startY - 80);
     m_symmetrySlider->setScale(0.8f);
     m_mainMenu->addChild(m_symmetrySlider);
     
     // Detail slider
     auto detailLabel = CCLabelBMFont::create("Detail:", "bigFont.fnt");
-    detailLabel->setPosition(CCSize(80, startY - 120));
+    detailLabel->setPosition(80, startY - 120);
     detailLabel->setScale(0.4f);
     m_overlayPanel->addChild(detailLabel);
     
     m_detailSlider = Slider::create(this, menu_selector(AIDecorateLayer::onDetailChanged), 0.4f);
-    m_detailSlider->setPosition(CCSize(panelSize.width / 2 + 50, startY - 120));
+    m_detailSlider->setPosition(panelSize.width / 2 + 50, startY - 120);
     m_detailSlider->setScale(0.8f);
     m_mainMenu->addChild(m_detailSlider);
 }
@@ -204,14 +205,14 @@ void AIDecorateLayer::createToggles() {
         this,
         menu_selector(AIDecorateLayer::onEdgeEmphasisChanged)
     );
-    m_edgeEmphasisToggle->setPosition(CCSize(100, startY));
+    m_edgeEmphasisToggle->setPosition(100, startY);
     m_edgeEmphasisToggle->toggle(m_currentPreset ? m_currentPreset->edgeEmphasis : true);
     m_mainMenu->addChild(m_edgeEmphasisToggle);
     
     auto edgeLabel = CCLabelBMFont::create("Edge Emphasis", "bigFont.fnt");
-    edgeLabel->setPosition(CCSize(180, startY));
+    edgeLabel->setPosition(180, startY);
     edgeLabel->setScale(0.35f);
-    edgeLabel->setAnchorPoint(CCSize(0, 0.5f));
+    edgeLabel->setAnchorPoint(CCPoint(0, 0.5f));
     m_overlayPanel->addChild(edgeLabel);
     
     // Flow Following toggle
@@ -223,14 +224,14 @@ void AIDecorateLayer::createToggles() {
         this,
         menu_selector(AIDecorateLayer::onFlowFollowingChanged)
     );
-    m_flowFollowingToggle->setPosition(CCSize(100, startY - 35));
+    m_flowFollowingToggle->setPosition(100, startY - 35);
     m_flowFollowingToggle->toggle(m_currentPreset ? m_currentPreset->flowFollowing : true);
     m_mainMenu->addChild(m_flowFollowingToggle);
     
     auto flowLabel = CCLabelBMFont::create("Flow Following", "bigFont.fnt");
-    flowLabel->setPosition(CCSize(180, startY - 35));
+    flowLabel->setPosition(180, startY - 35);
     flowLabel->setScale(0.35f);
-    flowLabel->setAnchorPoint(CCSize(0, 0.5f));
+    flowLabel->setAnchorPoint(CCPoint(0, 0.5f));
     m_overlayPanel->addChild(flowLabel);
     
     // Symmetry Mirroring toggle
@@ -242,14 +243,14 @@ void AIDecorateLayer::createToggles() {
         this,
         menu_selector(AIDecorateLayer::onSymmetryMirroringChanged)
     );
-    m_symmetryMirroringToggle->setPosition(CCSize(100, startY - 70));
+    m_symmetryMirroringToggle->setPosition(100, startY - 70);
     m_symmetryMirroringToggle->toggle(m_currentPreset ? m_currentPreset->symmetryMirroring : true);
     m_mainMenu->addChild(m_symmetryMirroringToggle);
     
     auto symLabel = CCLabelBMFont::create("Symmetry Mirroring", "bigFont.fnt");
-    symLabel->setPosition(CCSize(180, startY - 70));
+    symLabel->setPosition(180, startY - 70);
     symLabel->setScale(0.35f);
-    symLabel->setAnchorPoint(CCSize(0, 0.5f));
+    symLabel->setAnchorPoint(CCPoint(0, 0.5f));
     m_overlayPanel->addChild(symLabel);
     
     // Anti-Clutter toggle
@@ -261,14 +262,14 @@ void AIDecorateLayer::createToggles() {
         this,
         menu_selector(AIDecorateLayer::onAntiClutterChanged)
     );
-    m_antiClutterToggle->setPosition(CCSize(100, startY - 105));
+    m_antiClutterToggle->setPosition(100, startY - 105);
     m_antiClutterToggle->toggle(m_currentPreset ? m_currentPreset->antiClutterMode : false);
     m_mainMenu->addChild(m_antiClutterToggle);
     
     auto clutterLabel = CCLabelBMFont::create("Anti-Clutter", "bigFont.fnt");
-    clutterLabel->setPosition(CCSize(180, startY - 105));
+    clutterLabel->setPosition(180, startY - 105);
     clutterLabel->setScale(0.35f);
-    clutterLabel->setAnchorPoint(CCSize(0, 0.5f));
+    clutterLabel->setAnchorPoint(CCPoint(0, 0.5f));
     m_overlayPanel->addChild(clutterLabel);
 }
 
@@ -283,7 +284,7 @@ void AIDecorateLayer::createActionButtons() {
         this,
         menu_selector(AIDecorateLayer::onAnalyze)
     );
-    m_analyzeButton->setPosition(CCSize(panelSize.width / 2, startY + 60));
+    m_analyzeButton->setPosition(panelSize.width / 2, startY + 60);
     m_mainMenu->addChild(m_analyzeButton);
     
     // Apply button
@@ -293,7 +294,7 @@ void AIDecorateLayer::createActionButtons() {
         this,
         menu_selector(AIDecorateLayer::onApply)
     );
-    m_applyButton->setPosition(CCSize(panelSize.width / 2, startY + 20));
+    m_applyButton->setPosition(panelSize.width / 2, startY + 20);
     m_mainMenu->addChild(m_applyButton);
     
     // Save Preset button
@@ -303,7 +304,7 @@ void AIDecorateLayer::createActionButtons() {
         this,
         menu_selector(AIDecorateLayer::onSavePreset)
     );
-    m_savePresetButton->setPosition(CCSize(panelSize.width / 2, startY - 20));
+    m_savePresetButton->setPosition(panelSize.width / 2, startY - 20);
     m_mainMenu->addChild(m_savePresetButton);
 }
 
@@ -312,7 +313,7 @@ void AIDecorateLayer::createProgressDisplay() {
     
     // Progress label
     m_progressLabel = CCLabelBMFont::create("", "bigFont.fnt");
-    m_progressLabel->setPosition(CCSize(panelSize.width / 2, 30));
+    m_progressLabel->setPosition(panelSize.width / 2, 30);
     m_progressLabel->setScale(0.4f);
     m_progressLabel->setVisible(false);
     m_overlayPanel->addChild(m_progressLabel);
@@ -323,7 +324,7 @@ void AIDecorateLayer::createProgressDisplay() {
     m_progressBar->setType(kCCProgressTimerTypeBar);
     m_progressBar->setBarChangeRate(CCSize(1, 0));
     m_progressBar->setMidpoint(CCSize(0, 0));
-    m_progressBar->setPosition(CCSize(panelSize.width / 2, 15));
+    m_progressBar->setPosition(panelSize.width / 2, 15);
     m_progressBar->setScaleX(0.8f);
     m_progressBar->setScaleY(0.5f);
     m_progressBar->setPercentage(0);
@@ -338,7 +339,7 @@ void AIDecorateLayer::updateProgressDisplay(const std::string& status, float pro
     }
     
     if (m_progressBar) {
-        m_progressBar->setPercentage(progress * 100);
+        m_progressBar->setPercentage(std::clamp(progress, 0.0f, 1.0f) * 100.0f);
         m_progressBar->setVisible(true);
     }
 }
@@ -349,24 +350,26 @@ void AIDecorateLayer::onToggle(CCObject* sender) {
     } else {
         showOverlay();
     }
-    m_isVisible = !m_isVisible;
 }
 
 void AIDecorateLayer::showOverlay() {
+    if (!m_overlayPanel) {
+        return;
+    }
+    m_overlayPanel->stopAllActions();
     m_overlayPanel->setVisible(true);
-    m_overlayPanel->runAction(CCFadeIn::create(0.2f));
+    m_overlayPanel->setOpacity(0);
+    m_overlayPanel->runAction(CCFadeTo::create(0.18f, 220));
+    m_isVisible = true;
 }
 
 void AIDecorateLayer::hideOverlay() {
-    m_overlayPanel->runAction(CCSequence::create(
-        CCFadeOut::create(0.2f),
-        CCCallFunc::create(this, callfunc_selector(AIDecorateLayer::hideOverlay)),
-        nullptr
-    ));
-}
-
-void AIDecorateLayer::hideOverlay() {
+    if (!m_overlayPanel) {
+        return;
+    }
+    m_overlayPanel->stopAllActions();
     m_overlayPanel->setVisible(false);
+    m_isVisible = false;
 }
 
 void AIDecorateLayer::onPresetChanged(CCObject* sender) {
