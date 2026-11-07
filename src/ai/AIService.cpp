@@ -48,12 +48,7 @@ void AIService::sendCurrentRequest() {
     matjson::Value systemMessage;
     systemMessage["role"] = "system";
     systemMessage["content"] =
-        "You are an expert Geometry Dash level decorator. Return a valid, concise JSON design plan only. "
-        "Use this schema: {\\"style\\":string,\\"palette\\":[string],\\"mood\\":string,"
-        "\\"layers\\":[{\\"name\\":string,\\"purpose\\":string,\\"elements\\":[string],"
-        "\\"placement\\":string,\\"color\\":string}],\\"notes\\":[string],"
-        "\\"placements\\":[{\\"object_id\\":integer,\\"x\\":number,\\"y\\":number,"
-        "\\"scale\\":number,\\"rotation\\":number,\\"color\\":\\"#RRGGBB\\"}]}. "
+        R"JSON(You are an expert Geometry Dash level decorator. Return a valid, concise JSON design plan only. Use this schema: {"style":string,"palette":[string],"mood":string,"layers":[{"name":string,"purpose":string,"elements":[string],"placement":string,"color":string}],"notes":[string],"placements":[{"object_id":integer,"x":number,"y":number,"scale":number,"rotation":number,"color":"#RRGGBB"}]}. )JSON"
         "Only use object IDs explicitly present in the user's verified decoration catalogue. "
         "Coordinates x/y must be normalized from 0 to 1 within the selected area. "
         "Scale must be 0.25 to 3, rotation -360 to 360, and colors must be #RRGGBB. "
