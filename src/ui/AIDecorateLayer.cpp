@@ -60,274 +60,170 @@ bool AIDecorateLayer::init(EditorUI* editorUI) {
 
 void AIDecorateLayer::createToolbarButton() {
     auto winSize = CCDirector::sharedDirector()->getWinSize();
-    
-    // Create toggle button
     auto buttonSprite = ButtonSprite::create("Alt3rDECO");
     auto button = CCMenuItemSpriteExtra::create(
-        buttonSprite,
-        this,
-        menu_selector(AIDecorateLayer::onToggle)
+        buttonSprite, this, menu_selector(AIDecorateLayer::onToggle)
     );
-    
+    button->setScale(0.72f);
     m_toggleButton = button;
-    
-    // Position in toolbar area
     auto menu = CCMenu::create();
     menu->addChild(button);
-    menu->setPosition(winSize.width / 2, winSize.height - 30);
-    this->addChild(menu);
+    menu->setPosition(winSize.width / 2, winSize.height - 24.f);
+    this->addChild(menu, 50);
 }
 
 void AIDecorateLayer::createOverlayPanel() {
     auto winSize = CCDirector::sharedDirector()->getWinSize();
-    
-    // Create main panel
+    constexpr float panelWidth = 420.f;
+    constexpr float panelHeight = 300.f;
     auto panel = CCScale9Sprite::create("square02_001.png");
-    panel->setContentSize(CCSize(400, 500));
-    panel->setPosition(winSize.width / 2, winSize.height / 2);
-    panel->setOpacity(200);
-    
+    panel->setContentSize(CCSize(panelWidth, panelHeight));
+    panel->setPosition(winSize.width / 2.f, winSize.height / 2.f);
+    panel->setOpacity(220);
+    const float fitScale = std::min(
+        1.f,
+        std::min((winSize.width - 20.f) / panelWidth,
+                 (winSize.height - 20.f) / panelHeight)
+    );
+    panel->setScale(std::max(0.62f, fitScale));
     m_overlayPanel = panel;
-    this->addChild(panel);
-    
-    // Create main menu for panel content
+    this->addChild(panel, 10);
     m_mainMenu = CCMenu::create();
     m_mainMenu->setPosition(0, 0);
-    panel->addChild(m_mainMenu);
+    panel->addChild(m_mainMenu, 5);
 }
 
 void AIDecorateLayer::createPresetSelector() {
     auto panelSize = m_overlayPanel->getContentSize();
-    
-    // Preset label
-    auto presetLabel = CCLabelBMFont::create("Preset:", "bigFont.fnt");
-    presetLabel->setPosition(CCSize(panelSize.width / 2, panelSize.height - 40));
-    presetLabel->setScale(0.6f);
-    m_overlayPanel->addChild(presetLabel);
-    
-    // Current preset display
+    auto heading = CCLabelBMFont::create("PRESETS", "bigFont.fnt");
+    heading->setPosition(105.f, panelSize.height - 28.f);
+    heading->setScale(0.42f);
+    m_overlayPanel->addChild(heading);
     m_presetLabel = CCLabelBMFont::create(
-        m_currentPreset ? m_currentPreset->name.c_str() : "None",
-        "goldFont.fnt"
+        m_currentPreset ? m_currentPreset->name.c_str() : "None", "goldFont.fnt"
     );
-    m_presetLabel->setPosition(CCSize(panelSize.width / 2, panelSize.height - 70));
-    m_presetLabel->setScale(0.5f);
+    m_presetLabel->setPosition(105.f, panelSize.height - 48.f);
+    m_presetLabel->setScale(0.38f);
     m_overlayPanel->addChild(m_presetLabel);
-    
-    // Preset selector menu
     m_presetMenu = CCMenu::create();
-    m_presetMenu->setPosition(CCSize(panelSize.width / 2, panelSize.height - 100));
-    m_overlayPanel->addChild(m_presetMenu);
-    
+    m_presetMenu->setPosition(105.f, panelSize.height - 76.f);
+    m_overlayPanel->addChild(m_presetMenu, 6);
     updatePresetDropdown();
 }
 
 void AIDecorateLayer::updatePresetDropdown() {
     m_presetMenu->removeAllChildren();
-    
-    float yOffset = 0;
-    for (const auto& preset : m_availablePresets) {
+    for (size_t i = 0; i < m_availablePresets.size(); ++i) {
+        const auto& preset = m_availablePresets[i];
         auto label = CCLabelBMFont::create(preset.name.c_str(), "chatFont.fnt");
-        label->setScale(0.4f);
-        
+        label->setScale(0.34f);
         auto button = CCMenuItemLabel::create(
-            label,
-            this,
-            menu_selector(AIDecorateLayer::onPresetChanged)
+            label, this, menu_selector(AIDecorateLayer::onPresetChanged)
         );
         button->setUserObject(CCString::create(preset.id.c_str()));
-        button->setPosition(0, yOffset);
-        
+        const int column = static_cast<int>(i % 2);
+        const int row = static_cast<int>(i / 2);
+        button->setPosition(column == 0 ? -48.f : 48.f, -static_cast<float>(row) * 21.f);
         m_presetMenu->addChild(button);
-        yOffset -= 25;
     }
 }
 
 void AIDecorateLayer::createSliders() {
-    auto panelSize = m_overlayPanel->getContentSize();
-    float startY = panelSize.height - 200;
-    
-    // Density slider
-    auto densityLabel = CCLabelBMFont::create("Density:", "bigFont.fnt");
-    densityLabel->setPosition(CCSize(80, startY));
-    densityLabel->setScale(0.4f);
-    m_overlayPanel->addChild(densityLabel);
-    
-    m_densitySlider = Slider::create(this, menu_selector(AIDecorateLayer::onDensityChanged), 0.5f);
-    m_densitySlider->setPosition(CCSize(panelSize.width / 2 + 50, startY));
-    m_densitySlider->setScale(0.8f);
-    m_mainMenu->addChild(m_densitySlider);
-    
-    // Chaos slider
-    auto chaosLabel = CCLabelBMFont::create("Chaos:", "bigFont.fnt");
-    chaosLabel->setPosition(CCSize(80, startY - 40));
-    chaosLabel->setScale(0.4f);
-    m_overlayPanel->addChild(chaosLabel);
-    
-    m_chaosSlider = Slider::create(this, menu_selector(AIDecorateLayer::onChaosChanged), 0.3f);
-    m_chaosSlider->setPosition(CCSize(panelSize.width / 2 + 50, startY - 40));
-    m_chaosSlider->setScale(0.8f);
-    m_mainMenu->addChild(m_chaosSlider);
-    
-    // Symmetry slider
-    auto symmetryLabel = CCLabelBMFont::create("Symmetry:", "bigFont.fnt");
-    symmetryLabel->setPosition(CCSize(80, startY - 80));
-    symmetryLabel->setScale(0.4f);
-    m_overlayPanel->addChild(symmetryLabel);
-    
-    m_symmetrySlider = Slider::create(this, menu_selector(AIDecorateLayer::onSymmetryChanged), 0.7f);
-    m_symmetrySlider->setPosition(CCSize(panelSize.width / 2 + 50, startY - 80));
-    m_symmetrySlider->setScale(0.8f);
-    m_mainMenu->addChild(m_symmetrySlider);
-    
-    // Detail slider
-    auto detailLabel = CCLabelBMFont::create("Detail:", "bigFont.fnt");
-    detailLabel->setPosition(CCSize(80, startY - 120));
-    detailLabel->setScale(0.4f);
-    m_overlayPanel->addChild(detailLabel);
-    
-    m_detailSlider = Slider::create(this, menu_selector(AIDecorateLayer::onDetailChanged), 0.4f);
-    m_detailSlider->setPosition(CCSize(panelSize.width / 2 + 50, startY - 120));
-    m_detailSlider->setScale(0.8f);
-    m_mainMenu->addChild(m_detailSlider);
+    const float labelX = 245.f;
+    const float sliderX = 340.f;
+    const float startY = 246.f;
+    const char* names[] = {"Density", "Chaos", "Symmetry", "Detail"};
+    Slider** sliders[] = {&m_densitySlider, &m_chaosSlider, &m_symmetrySlider, &m_detailSlider};
+    const float defaults[] = {0.5f, 0.3f, 0.7f, 0.4f};
+    for (int i = 0; i < 4; ++i) {
+        const float y = startY - static_cast<float>(i) * 34.f;
+        auto label = CCLabelBMFont::create(names[i], "bigFont.fnt");
+        label->setPosition(labelX, y);
+        label->setScale(0.34f);
+        m_overlayPanel->addChild(label);
+        SEL_MenuHandler callback =
+            i == 0 ? menu_selector(AIDecorateLayer::onDensityChanged) :
+            i == 1 ? menu_selector(AIDecorateLayer::onChaosChanged) :
+            i == 2 ? menu_selector(AIDecorateLayer::onSymmetryChanged) :
+                     menu_selector(AIDecorateLayer::onDetailChanged);
+        *sliders[i] = Slider::create(this, callback, defaults[i]);
+        (*sliders[i])->setPosition(sliderX, y);
+        (*sliders[i])->setScale(0.72f);
+        m_mainMenu->addChild(*sliders[i]);
+    }
 }
 
 void AIDecorateLayer::createToggles() {
-    auto panelSize = m_overlayPanel->getContentSize();
-    float startY = panelSize.height - 280;
-    
-    // Edge Emphasis toggle
-    auto edgeSprite = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
-    auto edgeUncheckSprite = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-    m_edgeEmphasisToggle = CCMenuItemToggler::create(
-        edgeSprite,
-        edgeUncheckSprite,
-        this,
-        menu_selector(AIDecorateLayer::onEdgeEmphasisChanged)
-    );
-    m_edgeEmphasisToggle->setPosition(CCSize(100, startY));
-    m_edgeEmphasisToggle->toggle(m_currentPreset ? m_currentPreset->edgeEmphasis : true);
-    m_mainMenu->addChild(m_edgeEmphasisToggle);
-    
-    auto edgeLabel = CCLabelBMFont::create("Edge Emphasis", "bigFont.fnt");
-    edgeLabel->setPosition(CCSize(180, startY));
-    edgeLabel->setScale(0.35f);
-    edgeLabel->setAnchorPoint(CCSize(0, 0.5f));
-    m_overlayPanel->addChild(edgeLabel);
-    
-    // Flow Following toggle
-    auto flowSprite = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
-    auto flowUncheckSprite = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-    m_flowFollowingToggle = CCMenuItemToggler::create(
-        flowSprite,
-        flowUncheckSprite,
-        this,
-        menu_selector(AIDecorateLayer::onFlowFollowingChanged)
-    );
-    m_flowFollowingToggle->setPosition(CCSize(100, startY - 35));
-    m_flowFollowingToggle->toggle(m_currentPreset ? m_currentPreset->flowFollowing : true);
-    m_mainMenu->addChild(m_flowFollowingToggle);
-    
-    auto flowLabel = CCLabelBMFont::create("Flow Following", "bigFont.fnt");
-    flowLabel->setPosition(CCSize(180, startY - 35));
-    flowLabel->setScale(0.35f);
-    flowLabel->setAnchorPoint(CCSize(0, 0.5f));
-    m_overlayPanel->addChild(flowLabel);
-    
-    // Symmetry Mirroring toggle
-    auto symSprite = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
-    auto symUncheckSprite = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-    m_symmetryMirroringToggle = CCMenuItemToggler::create(
-        symSprite,
-        symUncheckSprite,
-        this,
-        menu_selector(AIDecorateLayer::onSymmetryMirroringChanged)
-    );
-    m_symmetryMirroringToggle->setPosition(CCSize(100, startY - 70));
-    m_symmetryMirroringToggle->toggle(m_currentPreset ? m_currentPreset->symmetryMirroring : true);
-    m_mainMenu->addChild(m_symmetryMirroringToggle);
-    
-    auto symLabel = CCLabelBMFont::create("Symmetry Mirroring", "bigFont.fnt");
-    symLabel->setPosition(CCSize(180, startY - 70));
-    symLabel->setScale(0.35f);
-    symLabel->setAnchorPoint(CCSize(0, 0.5f));
-    m_overlayPanel->addChild(symLabel);
-    
-    // Anti-Clutter toggle
-    auto clutterSprite = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
-    auto clutterUncheckSprite = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-    m_antiClutterToggle = CCMenuItemToggler::create(
-        clutterSprite,
-        clutterUncheckSprite,
-        this,
-        menu_selector(AIDecorateLayer::onAntiClutterChanged)
-    );
-    m_antiClutterToggle->setPosition(CCSize(100, startY - 105));
-    m_antiClutterToggle->toggle(m_currentPreset ? m_currentPreset->antiClutterMode : false);
-    m_mainMenu->addChild(m_antiClutterToggle);
-    
-    auto clutterLabel = CCLabelBMFont::create("Anti-Clutter", "bigFont.fnt");
-    clutterLabel->setPosition(CCSize(180, startY - 105));
-    clutterLabel->setScale(0.35f);
-    clutterLabel->setAnchorPoint(CCSize(0, 0.5f));
-    m_overlayPanel->addChild(clutterLabel);
+    struct ToggleInfo {
+        const char* label;
+        CCMenuItemToggler** target;
+        SEL_MenuHandler callback;
+        bool initial;
+        float x;
+        float y;
+    };
+    const bool edge = m_currentPreset ? m_currentPreset->edgeEmphasis : true;
+    const bool flow = m_currentPreset ? m_currentPreset->flowFollowing : true;
+    const bool symmetry = m_currentPreset ? m_currentPreset->symmetryMirroring : true;
+    const bool clutter = m_currentPreset ? m_currentPreset->antiClutterMode : false;
+    ToggleInfo items[] = {
+        {"Edge", &m_edgeEmphasisToggle, menu_selector(AIDecorateLayer::onEdgeEmphasisChanged), edge, 55.f, 112.f},
+        {"Flow", &m_flowFollowingToggle, menu_selector(AIDecorateLayer::onFlowFollowingChanged), flow, 160.f, 112.f},
+        {"Mirror", &m_symmetryMirroringToggle, menu_selector(AIDecorateLayer::onSymmetryMirroringChanged), symmetry, 55.f, 76.f},
+        {"Anti-Clutter", &m_antiClutterToggle, menu_selector(AIDecorateLayer::onAntiClutterChanged), clutter, 160.f, 76.f}
+    };
+    for (const auto& item : items) {
+        auto onSprite = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
+        auto offSprite = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
+        *item.target = CCMenuItemToggler::create(onSprite, offSprite, this, item.callback);
+        (*item.target)->setPosition(item.x, item.y);
+        (*item.target)->setScale(0.78f);
+        (*item.target)->toggle(item.initial);
+        m_mainMenu->addChild(*item.target);
+        auto label = CCLabelBMFont::create(item.label, "bigFont.fnt");
+        label->setPosition(item.x + 17.f, item.y);
+        label->setScale(0.32f);
+        label->setAnchorPoint(CCPoint(0.f, 0.5f));
+        m_overlayPanel->addChild(label);
+    }
 }
 
 void AIDecorateLayer::createActionButtons() {
-    auto panelSize = m_overlayPanel->getContentSize();
-    float startY = 80;
-    
-    // Analyze button
-    auto analyzeSprite = ButtonSprite::create("Analyze Selection");
-    m_analyzeButton = CCMenuItemSpriteExtra::create(
-        analyzeSprite,
-        this,
-        menu_selector(AIDecorateLayer::onAnalyze)
-    );
-    m_analyzeButton->setPosition(CCSize(panelSize.width / 2, startY + 60));
-    m_mainMenu->addChild(m_analyzeButton);
-    
-    // Apply button
-    auto applySprite = ButtonSprite::create("Apply AI Decoration");
-    m_applyButton = CCMenuItemSpriteExtra::create(
-        applySprite,
-        this,
-        menu_selector(AIDecorateLayer::onApply)
-    );
-    m_applyButton->setPosition(CCSize(panelSize.width / 2, startY + 20));
-    m_mainMenu->addChild(m_applyButton);
-    
-    // Save Preset button
-    auto saveSprite = ButtonSprite::create("Save AI Preset");
-    m_savePresetButton = CCMenuItemSpriteExtra::create(
-        saveSprite,
-        this,
+    const float x = 320.f;
+    const float ys[] = {112.f, 70.f, 28.f};
+    const char* titles[] = {"Analyze", "Apply Deco", "Save Preset"};
+    SEL_MenuHandler callbacks[] = {
+        menu_selector(AIDecorateLayer::onAnalyze),
+        menu_selector(AIDecorateLayer::onApply),
         menu_selector(AIDecorateLayer::onSavePreset)
-    );
-    m_savePresetButton->setPosition(CCSize(panelSize.width / 2, startY - 20));
-    m_mainMenu->addChild(m_savePresetButton);
+    };
+    CCMenuItemSpriteExtra** targets[] = {
+        &m_analyzeButton, &m_applyButton, &m_savePresetButton
+    };
+    for (int i = 0; i < 3; ++i) {
+        auto sprite = ButtonSprite::create(titles[i]);
+        *targets[i] = CCMenuItemSpriteExtra::create(sprite, this, callbacks[i]);
+        (*targets[i])->setScale(0.62f);
+        (*targets[i])->setPosition(x, ys[i]);
+        m_mainMenu->addChild(*targets[i]);
+    }
 }
 
 void AIDecorateLayer::createProgressDisplay() {
-    auto panelSize = m_overlayPanel->getContentSize();
-    
-    // Progress label
     m_progressLabel = CCLabelBMFont::create("", "bigFont.fnt");
-    m_progressLabel->setPosition(CCSize(panelSize.width / 2, 30));
-    m_progressLabel->setScale(0.4f);
+    m_progressLabel->setPosition(105.f, 24.f);
+    m_progressLabel->setScale(0.32f);
     m_progressLabel->setVisible(false);
     m_overlayPanel->addChild(m_progressLabel);
-    
-    // Progress bar
     auto progressSprite = CCSprite::createWithSpriteFrameName("barbg.png");
     m_progressBar = CCProgressTimer::create(progressSprite);
     m_progressBar->setType(kCCProgressTimerTypeBar);
-    m_progressBar->setBarChangeRate(CCSize(1, 0));
-    m_progressBar->setMidpoint(CCSize(0, 0));
-    m_progressBar->setPosition(CCSize(panelSize.width / 2, 15));
-    m_progressBar->setScaleX(0.8f);
-    m_progressBar->setScaleY(0.5f);
-    m_progressBar->setPercentage(0);
+    m_progressBar->setBarChangeRate(CCSize(1.f, 0.f));
+    m_progressBar->setMidpoint(CCPoint(0.f, 0.f));
+    m_progressBar->setPosition(105.f, 9.f);
+    m_progressBar->setScaleX(0.55f);
+    m_progressBar->setScaleY(0.4f);
+    m_progressBar->setPercentage(0.f);
     m_progressBar->setVisible(false);
     m_overlayPanel->addChild(m_progressBar);
 }
