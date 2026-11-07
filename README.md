@@ -1,10 +1,10 @@
-# Auto Decorator AI
+# Alt3rDECO
 
 An intelligent AI-powered decoration system for Geometry Dash 2.2081 (PC) using the Geode modding framework.
 
 ## Overview
 
-Auto Decorator AI analyzes selected level geometry and automatically generates human-like decoration patterns using adaptive procedural rules and pattern recognition. The system behaves like a junior human designer assistant, avoiding mechanical repetition and introducing slight imperfections for realism.
+Alt3rDECO analyzes selected level geometry and automatically generates human-like decoration patterns using adaptive procedural rules and pattern recognition. The system behaves like a junior human designer assistant, avoiding mechanical repetition and introducing slight imperfections for realism.
 
 ## Features
 
@@ -21,7 +21,7 @@ Auto Decorator AI analyzes selected level geometry and automatically generates h
 5. **Retro Grid Symmetry**: Pixel-style grid placement with retro aesthetics
 
 ### Editor Integration
-- Toolbar button "Auto Decorate AI" that opens a persistent overlay window
+- Toolbar button "Alt3rDECO" that opens a persistent overlay window
 - Real-time analysis of selected objects
 - Adjustable parameters: Density, Chaos, Symmetry, Detail
 - Toggle switches: Edge Emphasis, Flow Following, Symmetry Mirroring, Anti-Clutter Mode
@@ -113,7 +113,7 @@ Auto Decorator AI analyzes selected level geometry and automatically generates h
 
 1. Open the Level Editor in Geometry Dash
 2. Select the objects you want to decorate
-3. Click the "Auto Decorate AI" button in the toolbar
+3. Click the "Alt3rDECO" button in the toolbar
 4. Select an AI preset from the dropdown
 5. Adjust parameters as needed:
    - **Density**: Overall decoration density (0.0 - 1.0)
@@ -140,7 +140,7 @@ Auto Decorator AI analyzes selected level geometry and automatically generates h
 
 Custom presets are saved as JSON files in:
 ```
-%LOCALAPPDATA%\GeometryDash\geode\mods\AutoDecoratorAI\presets\
+%LOCALAPPDATA%\GeometryDash\geode\mods\Alt3rDECO\presets\
 ```
 
 Example preset structure:
