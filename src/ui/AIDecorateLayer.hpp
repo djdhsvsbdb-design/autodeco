@@ -24,6 +24,7 @@ private:
     void onToggle(CCObject* sender);
     void onSetPrompt(CCObject* sender);
     void onGenerate(CCObject* sender);
+    void onApply(CCObject* sender);
 
     std::vector<geode::Ref<GameObject>> getSelectedObjects();
     void setStatus(const std::string& status);
@@ -33,12 +34,16 @@ private:
     CCMenu* m_mainMenu = nullptr;
     CCLabelBMFont* m_promptLabel = nullptr;
     CCLabelBMFont* m_statusLabel = nullptr;
+    CCMenuItemSpriteExtra* m_applyButton = nullptr;
 
     std::string m_prompt;
     bool m_isVisible = false;
     bool m_isGenerating = false;
     bool m_hasValidPlan = false;
     AI::DecorationPlan m_lastPlan;
+    std::vector<int> m_allowedObjectIds;
+    CCPoint m_areaMin = CCPointZero;
+    CCPoint m_areaMax = CCPointZero;
 };
 
 } // namespace AutoDecoratorAI
