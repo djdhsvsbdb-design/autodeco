@@ -45,6 +45,7 @@ private:
     
     CCLabelBMFont* m_progressLabel;
     CCProgressTimer* m_progressBar;
+    geode::TextInput* m_presetNameInput = nullptr;
     
     // State
     bool m_isVisible;
