@@ -174,7 +174,21 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorationsForClust
     if (preset.antiClutterMode) {
         applyAntiClutter(placements, cluster);
     }
-    
+
+    // Density is a real output multiplier: 0 keeps the selection clean,
+    // 1 keeps every generated placement. Shuffle first so we do not always
+    // discard the same category at the end of the vector.
+    const float safeDensity = std::clamp(densityScale, 0.0f, 1.0f);
+    if (safeDensity <= 0.0f) {
+        placements.clear();
+    } else if (safeDensity < 1.0f && !placements.empty()) {
+        std::shuffle(placements.begin(), placements.end(), m_randomGenerator);
+        const auto keepCount = static_cast<std::size_t>(
+            std::ceil(static_cast<float>(placements.size()) * safeDensity)
+        );
+        placements.resize(std::min(keepCount, placements.size()));
+    }
+
     return placements;
 }
 
@@ -383,7 +397,8 @@ void AIDecorationEngine::applyFlowFollowing(
     
     // Adjust positions slightly along flow direction
     for (auto& placement : placements) {
-        float offset = 5.0f + (std::rand() % 10);
+        std::uniform_real_distribution<float> offsetDistribution(5.0f, 14.0f);
+        float offset = offsetDistribution(m_randomGenerator);
         placement.position.x += patterns.flowDirection.x * offset;
         placement.position.y += patterns.flowDirection.y * offset;
     }
