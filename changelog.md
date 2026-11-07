@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.0.0 — development branch (not a stable release)
+
+- Bumped project and mod metadata to 2.0.0.
+- Added a curated Geometry Dash 2.2081 decorative object allow-list.
+- Replaced legacy built-in preset IDs that included portals, placeholder IDs, or gameplay-like objects.
+- Added the Modern Redline preset as the first built-in preset, with no glow entries.
+- Removed invalid weighted-selection fallbacks that could silently insert unrelated objects.
+- Added the Alt3rDECO 2.0 release plan covering 15 workstreams.
+
+### Release blockers
+
+- The Windows build has not yet been compiled in this environment.
+- Final red/black/gray tint application still needs verified color API implementation and in-game checks.
+- A visual preview/confirm workflow is still being completed.
+- Undo/redo and partial-apply rollback require in-game verification.
+- Large-selection performance and selection-isolation tests remain outstanding.
+- No packaged Geode artifact exists yet; binary scanning is therefore pending.
+
 ## 1.1.0 — development
 
 - Renamed the mod display name to Alt3rDECO.
@@ -8,14 +26,6 @@
 - Fixed duplicate overlay-hide method definition.
 - Made zero and low decoration density behave correctly.
 - Added a per-apply placement limit.
-- Removed the hard-coded fallback object ID: incomplete presets now fall back only to valid entries in their own pool, and empty/invalid pools are skipped instead of silently inserting an unrelated object.
+- Removed the hard-coded fallback object ID.
 - Improved preset file loading and restricted preset IDs to safe filename characters.
 - Kept the existing mod ID to preserve mod identity and saved data.
-
-### Not yet release-ready
-
-- Full compile and runtime validation have not been completed.
-- Orb, portal, and pad exclusion still needs to be implemented against verified 2.2081 object APIs.
-- Undo/redo behavior and object placement need in-game verification.
-- Modern red/black/gray styling still needs its color/object implementation.
-- Release artifact and malware scan of any packaged binary are not available yet.
