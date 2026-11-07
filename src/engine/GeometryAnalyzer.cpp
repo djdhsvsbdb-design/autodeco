@@ -268,8 +268,11 @@ bool GeometryAnalyzer::isLinearStructure(const std::vector<Ref<GameObject>>& obj
     if (objects.size() < 3) return false;
     
     auto bbox = computeBoundingBox(objects);
-    float aspectRatio = bbox.size.width / bbox.size.height;
-    
+    if (bbox.size.width <= 0.0f || bbox.size.height <= 0.0f) {
+        return false;
+    }
+    const float aspectRatio = bbox.size.width / bbox.size.height;
+
     return aspectRatio > 3.0f || aspectRatio < 0.33f;
 }
 
