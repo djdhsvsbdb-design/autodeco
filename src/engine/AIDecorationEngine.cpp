@@ -100,6 +100,11 @@ std::vector<DecorationPlacement> AIDecorationEngine::generateDecorations(
     // Validate and filter placements
     std::vector<DecorationPlacement> validatedPlacements;
     for (const auto& placement : allPlacements) {
+        // Never emit a placeholder or invalid object ID from a malformed preset.
+        if (placement.objectID <= 0) {
+            continue;
+        }
+
         // A placement belongs to one cluster, not every cluster. The old
         // all-clusters test rejected nearly all decorations in multi-cluster selections.
         bool insideSelection = false;
@@ -308,17 +313,34 @@ DecorationPlacement AIDecorationEngine::selectDecorationObject(
 ) {
     DecorationPlacement placement;
     
-    // Filter objects by category
+    // Prefer the requested category, but fall back to this preset's own pool
+    // when that category is not populated. Never invent an unrelated object ID.
     std::vector<DecorationObject> filtered;
     for (const auto& obj : preset.decorationPool) {
-        if (category.empty() || obj.category == category) {
+        if (obj.objectID > 0 && obj.weight > 0.0f &&
+            (category.empty() || obj.category == category)) {
             filtered.push_back(obj);
         }
     }
-    
+
     if (filtered.empty()) {
-        placement.objectID = 100; // Fallback
+        for (const auto& obj : preset.decorationPool) {
+            if (obj.objectID > 0 && obj.weight > 0.0f) {
+                filtered.push_back(obj);
+            }
+        }
+    }
+
+    // Empty or invalid pools produce ID 0; the validation pass drops them.
+    if (filtered.empty()) {
+        placement.objectID = 0;
         return placement;
+    }
+
+    auto selected = selectWeightedObject(filtered, category);
+    placement.objectID = selected.objectID;
+
+    return placement;
     }
     
     // Select weighted random object
