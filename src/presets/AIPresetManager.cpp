@@ -46,7 +46,7 @@ void AIPresetManager::initialize() {
 }
 
 void AIPresetManager::loadBuiltInPresets() {
-    addPreset(createAdaptiveNeonPreset());
+    addPreset(createModernRedlinePreset());
     addPreset(createMinimalStructuralPreset());
     addPreset(createHighDetailDemonPreset());
     addPreset(createCleanArchitecturalPreset());
@@ -142,12 +142,12 @@ AIPreset AIPresetManager::createCustomPreset(const std::string& name, const std:
     return preset;
 }
 
-AIPreset AIPresetManager::createAdaptiveNeonPreset() {
+AIPreset AIPresetManager::createModernRedlinePreset() {
     AIPreset preset;
-    preset.id = "builtin_adaptive_neon";
-    preset.name = "Adaptive Neon Intelligence";
-    preset.description = "High contrast outlines with layered lighting objects and glow effects";
-    preset.styleBias = StyleBias::NeonGlow;
+    preset.id = "builtin_modern_redline";
+    preset.name = "Modern Redline";
+    preset.description = "Clean red/black/gray-ready geometric decoration. Uses curated non-gameplay object IDs and no glow objects.";
+    preset.styleBias = StyleBias::CleanModern;
     preset.symmetryPreference = 0.6f;
     preset.chaosTolerance = 0.4f;
     preset.clusteringThreshold = 0.4f;
@@ -167,13 +167,35 @@ AIPreset AIPresetManager::createAdaptiveNeonPreset() {
     preset.styleWeights["contrast"] = 0.9f;
     preset.styleWeights["layering"] = 0.8f;
     
-    // Neon decoration objects
+    // IDs verified against the 2.2081 object catalogue. These are decorative
+    // rods, clouds, gears, bricks, wavy trims and pipe/highlight pieces.
+    // No orb, portal, pad, trigger, hazard or glow object is included.
     preset.decorationPool = {
-        {749, 1.0f, "glow", true, false},   // Glow orb
-        {750, 0.9f, "glow", true, false},   // Small glow
-        {751, 0.8f, "outline", false, false}, // Neon line
-        {752, 0.7f, "detail", false, true},  // Micro particle
-        {753, 0.6f, "accent", true, false}  // Neon accent
+        {15, 0.5f, "detail", false, true},
+        {16, 0.7f, "edge", false, false},
+        {17, 0.5f, "detail", false, true},
+        {48, 0.3f, "fill", false, false},
+        {49, 0.3f, "fill", false, false},
+        {85, 0.8f, "accent", false, false},
+        {86, 0.7f, "accent", false, false},
+        {87, 0.6f, "detail", false, true},
+        {113, 0.8f, "fill", false, false},
+        {114, 0.7f, "fill", false, false},
+        {115, 0.6f, "detail", false, true},
+        {157, 0.7f, "edge", false, false},
+        {158, 0.4f, "edge", false, false},
+        {159, 0.4f, "edge", false, false},
+        {225, 0.7f, "edge", false, false},
+        {226, 0.5f, "accent", false, false},
+        {227, 0.7f, "detail", false, true},
+        {228, 0.5f, "detail", false, true},
+        {233, 0.8f, "fill", false, false},
+        {234, 0.6f, "fill", false, false},
+        {235, 0.5f, "detail", false, true},
+        {245, 0.8f, "accent", false, false},
+        {246, 0.5f, "detail", false, true},
+        {277, 0.7f, "fill", false, false},
+        {278, 0.5f, "detail", false, true}
     };
     
     return preset;
@@ -205,9 +227,11 @@ AIPreset AIPresetManager::createMinimalStructuralPreset() {
     preset.styleWeights["balance"] = 0.8f;
     
     preset.decorationPool = {
-        {100, 0.8f, "structure", false, false}, // Basic block
-        {101, 0.7f, "accent", false, false},    // Small accent
-        {102, 0.6f, "detail", false, true}     // Minimal detail
+        {15, 0.8f, "structure", false, false},
+        {16, 0.7f, "accent", false, false},
+        {17, 0.6f, "detail", false, true},
+        {157, 0.5f, "edge", false, false},
+        {227, 0.4f, "detail", false, true}
     };
     
     return preset;
@@ -239,11 +263,12 @@ AIPreset AIPresetManager::createHighDetailDemonPreset() {
     preset.styleWeights["detail"] = 0.8f;
     
     preset.decorationPool = {
-        {45, 1.0f, "spike", false, false},    // Spike
-        {46, 0.9f, "spike", false, false},    // Double spike
-        {47, 0.8f, "hazard", false, false},   // Hazard
-        {48, 0.7f, "detail", false, true},    // Micro detail
-        {49, 0.6f, "accent", false, false}    // Chaotic accent
+        {85, 1.0f, "accent", false, false},
+        {86, 0.9f, "accent", false, false},
+        {87, 0.8f, "detail", false, true},
+        {180, 0.7f, "edge", false, false},
+        {181, 0.6f, "detail", false, true},
+        {182, 0.5f, "detail", false, true}
     };
     
     return preset;
@@ -275,10 +300,11 @@ AIPreset AIPresetManager::createCleanArchitecturalPreset() {
     preset.styleWeights["structure"] = 0.8f;
     
     preset.decorationPool = {
-        {200, 0.9f, "structure", false, false}, // Architectural block
-        {201, 0.8f, "frame", false, false},     // Frame element
-        {202, 0.7f, "detail", false, true},    // Architectural detail
-        {203, 0.6f, "accent", false, false}     // Clean accent
+        {233, 0.9f, "structure", false, false},
+        {234, 0.8f, "frame", false, false},
+        {235, 0.7f, "detail", false, true},
+        {245, 0.6f, "accent", false, false},
+        {246, 0.5f, "detail", false, true}
     };
     
     return preset;
@@ -310,10 +336,12 @@ AIPreset AIPresetManager::createRetroGridSymmetryPreset() {
     preset.styleWeights["retro"] = 0.8f;
     
     preset.decorationPool = {
-        {300, 0.9f, "pixel", false, false},   // Pixel block
-        {301, 0.8f, "pixel", false, false},   // Small pixel
-        {302, 0.7f, "detail", false, true},    // Pixel detail
-        {303, 0.6f, "accent", false, false}    // Retro accent
+        {50, 0.7f, "pixel", false, false},
+        {51, 0.6f, "pixel", false, false},
+        {52, 0.4f, "detail", false, true},
+        {53, 0.5f, "accent", false, false},
+        {54, 0.4f, "detail", false, true},
+        {157, 0.5f, "edge", false, false}
     };
     
     return preset;
