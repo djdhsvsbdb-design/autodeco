@@ -1,3 +1,4 @@
+# Windows-only CI for the current development branch.
 name: Build Alt3rDECO (Windows)
 on:
   push:
