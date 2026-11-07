@@ -341,13 +341,6 @@ DecorationPlacement AIDecorationEngine::selectDecorationObject(
     placement.objectID = selected.objectID;
 
     return placement;
-    }
-    
-    // Select weighted random object
-    auto selected = selectWeightedObject(filtered, category);
-    placement.objectID = selected.objectID;
-    
-    return placement;
 }
 
 cocos2d::CCPoint AIDecorationEngine::generatePositionInZone(
@@ -478,21 +471,29 @@ cocos2d::CCPoint AIDecorationEngine::applyImperfection(cocos2d::CCPoint position
 
 DecorationObject AIDecorationEngine::selectWeightedObject(const std::vector<DecorationObject>& pool, const std::string& category) {
     if (pool.empty()) {
-        return DecorationObject{100, 1.0f, category, false, false};
+        return DecorationObject{0, 0.0f, category, false, false};
     }
     
     // Calculate total weight
     float totalWeight = 0.0f;
     for (const auto& obj : pool) {
-        totalWeight += obj.weight;
+        if (obj.objectID > 0 && std::isfinite(obj.weight) && obj.weight > 0.0f) {
+            totalWeight += obj.weight;
+        }
     }
-    
-    // Select based on weight
+    if (!(totalWeight > 0.0f) || !std::isfinite(totalWeight)) {
+        return DecorationObject{0, 0.0f, category, false, false};
+    }
+
+    // Select only from valid, positive-weight entries.
     std::uniform_real_distribution<float> dist(0.0f, totalWeight);
     float random = dist(m_randomGenerator);
     
     float currentWeight = 0.0f;
     for (const auto& obj : pool) {
+        if (obj.objectID <= 0 || !std::isfinite(obj.weight) || obj.weight <= 0.0f) {
+            continue;
+        }
         currentWeight += obj.weight;
         if (random <= currentWeight) {
             return obj;
