@@ -238,8 +238,14 @@ void AIDecorateLayer::onGenerate(CCObject*) {
         auto apiKey = mod->getSettingValue<std::string>(keyKey);
         const bool secureEndpoint = endpoint.rfind("https://", 0) == 0;
         const bool localEndpoint =
-            endpoint.rfind("http://localhost", 0) == 0 ||
-            endpoint.rfind("http://127.0.0.1", 0) == 0;
+            endpoint == "http://localhost" ||
+            endpoint.rfind("http://localhost:", 0) == 0 ||
+            endpoint.rfind("http://localhost/", 0) == 0 ||
+            endpoint == "http://127.0.0.1" ||
+            endpoint.rfind("http://127.0.0.1:", 0) == 0 ||
+            endpoint.rfind("http://127.0.0.1/", 0) == 0 ||
+            endpoint.rfind("http://[::1]:", 0) == 0 ||
+            endpoint.rfind("http://[::1]/", 0) == 0;
         if (!endpoint.empty() && !model.empty() && !apiKey.empty() &&
             (secureEndpoint || localEndpoint)) {
             providers.push_back(AI::ProviderConfig{id, name, endpoint, model, apiKey, true});
