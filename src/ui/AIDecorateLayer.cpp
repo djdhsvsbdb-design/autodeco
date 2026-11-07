@@ -152,6 +152,8 @@ void AIDecorateLayer::onSetPrompt(CCObject*) {
         auto cleaned = value;
         if (cleaned.size() > 1500) cleaned.resize(1500);
         m_prompt = cleaned;
+        m_hasValidPlan = false;
+        if (m_applyButton) m_applyButton->setEnabled(false);
         if (m_promptLabel) {
             std::string preview = m_prompt;
             if (preview.size() > 52) preview = preview.substr(0, 49) + "...";
