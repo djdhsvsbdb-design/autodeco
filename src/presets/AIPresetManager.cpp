@@ -9,7 +9,7 @@ namespace AutoDecoratorAI {
 AIPresetManager* AIPresetManager::s_instance = nullptr;
 
 AIPresetManager::AIPresetManager() {
-    m_presetDirectory = (geode::dirs::getModSaveDir() / "AutoDecoratorAI" / "presets").string();
+    m_presetDirectory = (geode::dirs::getModSaveDir() / "Alt3rDECO" / "presets").string();
 }
 
 AIPresetManager::~AIPresetManager() {}
