@@ -14,7 +14,7 @@ public:
     static AIService* get();
 
     void setProviders(std::vector<ProviderConfig> providers);
-    void generateDecorationPlan(const std::string& userPrompt, Completion completion);
+    void generateDecorationPlan(const std::string& userPrompt, std::vector<int> allowedObjectIds, Completion completion);
 
 private:
     AIService() = default;
@@ -24,6 +24,7 @@ private:
     ProviderRouter m_router;
     async::TaskHolder<web::WebResponse> m_requestTask;
     std::string m_userPrompt;
+    std::vector<int> m_allowedObjectIds;
     Completion m_completion;
 };
 
