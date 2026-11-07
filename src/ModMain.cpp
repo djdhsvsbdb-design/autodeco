@@ -18,11 +18,4 @@ class $modify(EditorUI) {
         return true;
     }
 
-    void destructor() {
-        if (m_aiDecorateLayer) {
-            m_aiDecorateLayer->removeFromParent();
-            m_aiDecorateLayer = nullptr;
-        }
-        EditorUI::destructor();
-    }
 };
