@@ -124,8 +124,8 @@ cocos2d::CCRect GeometryAnalyzer::computeBoundingBox(const std::vector<Ref<GameO
     
     float minX = FLT_MAX;
     float minY = FLT_MAX;
-    float maxX = FLT_MIN;
-    float maxY = FLT_MIN;
+    float maxX = -FLT_MAX;
+    float maxY = -FLT_MAX;
     
     for (const auto& obj : objects) {
         float x = obj->getPositionX();
@@ -307,37 +307,41 @@ bool GeometryAnalyzer::isSparsePlacement(const std::vector<Ref<GameObject>>& obj
     return density < 0.2f;
 }
 
-std::vector<Ref<GameObject>> GeometryAnalyzer::clusterObjectsByProximity(const std::vector<Ref<GameObject>>& objects, float threshold) {
-    std::vector<Ref<GameObject>> clustered;
+std::vector<std::vector<Ref<GameObject>>> GeometryAnalyzer::clusterObjectsByProximity(
+    const std::vector<Ref<GameObject>>& objects,
+    float threshold
+) {
+    std::vector<std::vector<Ref<GameObject>>> clusters;
     std::vector<bool> visited(objects.size(), false);
-    
+
+    // Breadth-first connected-component search: objects linked by a chain of
+    // nearby neighbors stay in the same cluster.
     for (size_t i = 0; i < objects.size(); ++i) {
-        if (visited[i]) continue;
-        
-        std::vector<Ref<GameObject>> currentCluster;
-        currentCluster.push_back(objects[i]);
+        if (visited[i] || !objects[i]) continue;
+
+        std::vector<Ref<GameObject>> cluster;
+        std::vector<size_t> pending{i};
         visited[i] = true;
-        
-        // Find nearby objects
-        for (size_t j = 0; j < objects.size(); ++j) {
-            if (visited[j]) continue;
-            
-            float dist = distance(objects[i]->getPosition(), objects[j]->getPosition());
-            if (dist < threshold) {
-                currentCluster.push_back(objects[j]);
-                visited[j] = true;
+
+        for (size_t cursor = 0; cursor < pending.size(); ++cursor) {
+            const size_t current = pending[cursor];
+            cluster.push_back(objects[current]);
+
+            for (size_t j = 0; j < objects.size(); ++j) {
+                if (visited[j] || !objects[j]) continue;
+                if (distance(objects[current]->getPosition(), objects[j]->getPosition()) <= threshold) {
+                    visited[j] = true;
+                    pending.push_back(j);
+                }
             }
         }
-        
-        // Add cluster if it's significant
-        if (currentCluster.size() >= 2) {
-            clustered.insert(clustered.end(), currentCluster.begin(), currentCluster.end());
-        } else {
-            clustered.push_back(objects[i]);
+
+        if (!cluster.empty()) {
+            clusters.push_back(std::move(cluster));
         }
     }
-    
-    return clustered;
+
+    return clusters;
 }
 
 }
