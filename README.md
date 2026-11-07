@@ -27,7 +27,7 @@ The code uses Geometry Dash's native `EditorUI::pasteObjects` path so the editor
 
 ## Build
 
-Requires Windows, CMake 3.21+, Visual Studio C++ tools, Geode SDK 5.0+, and Geometry Dash 2.2081. Set the `GEODE_SDK` environment variable to the Geode SDK directory.
+Requires Windows, CMake 3.25+, Visual Studio C++ tools, Geode SDK 5.11.2, and Geometry Dash 2.2081. Set the `GEODE_SDK` environment variable to the Geode SDK directory.
 
 ```sh
 cmake -S . -B build
