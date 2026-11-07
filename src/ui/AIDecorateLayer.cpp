@@ -83,17 +83,38 @@ void AIDecorateLayer::createOverlayPanel() {
     
     // Create main panel
     auto panel = CCScale9Sprite::create("square02_001.png");
-    panel->setContentSize(CCSize(400, 500));
+    constexpr float panelWidth = 420.0f;
+    constexpr float panelHeight = 520.0f;
+    panel->setContentSize(CCSize(panelWidth, panelHeight));
     panel->setPosition(winSize.width / 2, winSize.height / 2);
-    panel->setOpacity(200);
-    
+
+    // Keep the full panel visible on small window sizes.
+    const float widthScale = (winSize.width - 24.0f) / panelWidth;
+    const float heightScale = (winSize.height - 24.0f) / panelHeight;
+    panel->setScale(std::min(1.0f, std::min(widthScale, heightScale)));
+    panel->setOpacity(220);
+
     m_overlayPanel = panel;
     this->addChild(panel);
-    
-    // Create main menu for panel content
+
+    // Header and a dedicated close control make the panel easier to navigate.
+    auto title = CCLabelBMFont::create("AI DECORATOR", "goldFont.fnt");
+    title->setPosition(panelWidth / 2, panelHeight - 24.0f);
+    title->setScale(0.62f);
+    panel->addChild(title);
+
     m_mainMenu = CCMenu::create();
     m_mainMenu->setPosition(0, 0);
     panel->addChild(m_mainMenu);
+
+    auto closeSprite = ButtonSprite::create("Close", "goldFont.fnt", "Buttonართ_001.png", 0.7f);
+    auto closeButton = CCMenuItemSpriteExtra::create(
+        closeSprite,
+        this,
+        menu_selector(AIDecorateLayer::onToggle)
+    );
+    closeButton->setPosition(panelWidth - 42.0f, panelHeight - 26.0f);
+    m_mainMenu->addChild(closeButton);
 }
 
 void AIDecorateLayer::createPresetSelector() {
